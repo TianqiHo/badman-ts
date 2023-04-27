@@ -28,11 +28,11 @@
   ],
   "dependencies": {
     "dotenv": "^16.0.3",
+    "badman-core": "^0.0.5",
     "nacos-config": "^2.5.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "log4js": "^6.9.1",
-    "badman-core": "^0.0.5"
+    "log4js": "^6.9.1"
   }
 }
