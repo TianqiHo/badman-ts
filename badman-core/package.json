@@ -1,13 +1,13 @@
 {
   "name": "badman-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": false,
   "license": "MIT",
   "typings": "dist/BadmanCore.d.ts",
   "main": "dist/BadmanCore.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TianqiHo/badman-ts/badman-core"
+    "url": "https://github.com/TianqiHo/badman-ts/tree/main/badman-core"
   },
   "files": [
     "dist/",

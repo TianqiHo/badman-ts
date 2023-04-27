@@ -20,12 +20,10 @@ export default class RabbitAdminTemplate extends RabbitAccessor implements Rabbi
 		this.logger = logger;
 	}
 
-	afterInitialized () {
-
+	async afterInitialized () {
 	}
 
-	destroy () {
-
+	async destroy () {
 	}
 
 

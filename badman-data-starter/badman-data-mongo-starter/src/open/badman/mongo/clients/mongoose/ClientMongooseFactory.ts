@@ -53,6 +53,6 @@ export default class ClientMongooseFactory extends AbstractClientMongoFactory im
 
     }
 
-    destroy () {
+    async destroy () {
     }
 }

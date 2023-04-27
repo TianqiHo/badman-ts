@@ -7,7 +7,9 @@ import Initializing from "../Initializing";
 export default class NetParser implements Initializing{
     constructor() {}
 
-    afterInitialized () {}
+    afterInitialized (): Promise<void> {
+        return ;
+    }
 
     public parseIPV4Address():string{
         let networkInterfaces:NodeJS.Dict<NetworkInterfaceInfo[]> = os.networkInterfaces();

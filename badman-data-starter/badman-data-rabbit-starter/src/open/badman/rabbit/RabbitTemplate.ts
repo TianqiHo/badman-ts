@@ -19,11 +19,11 @@ export default class RabbitTemplate extends RabbitAccessor implements RabbitComm
 		this.logger = logger;
 	}
 
-	afterInitialized () {
+	async afterInitialized () {
 
 	}
 
-	destroy () {
+	async destroy () {
 
 	}
 

@@ -27,9 +27,9 @@ export default class BadmanWebSocket {
 
 }
 
-(() => {
-	new BadmanWebSocket().main();
-})();
+// (() => {
+// 	new BadmanWebSocket().main();
+// })();
 
 export {
 	AbstractWebSocketServerConnection,

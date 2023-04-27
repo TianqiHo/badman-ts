@@ -1,6 +1,6 @@
 {
   "name": "badman-websocket-starter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "oop websocket server",
   "private": false,
   "author": "BadMan",
@@ -9,7 +9,7 @@
   "typings": "dist/BadmanWebSocket.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TianqiHo/badman-ts/badman-websocket-starter"
+    "url": "https://github.com/TianqiHo/badman-ts/tree/main/badman-websocket-starter"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -30,12 +30,12 @@
     "WebsocketServer"
   ],
   "dependencies": {
+    "badman-core": "^0.0.6",
     "ws": "^8.10.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/ws": "^8.5.4",
-    "badman-core": "^0.0.5",
     "log4js": "^6.9.1"
   }
 }

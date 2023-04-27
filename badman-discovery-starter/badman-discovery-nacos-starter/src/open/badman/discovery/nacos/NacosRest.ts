@@ -27,7 +27,7 @@ export default class NacosRest implements Initializing{
 		}
 	}
 
-	afterInitialized () {
+	async afterInitialized () {
 
 	}
 

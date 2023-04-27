@@ -28,10 +28,10 @@ export default class BadmanRedis {
 		await SingletonObjectFactory2.init<Logging>(Logging);
 
 		let properties:RedisStandaloneConfiguration = {
-			password: 'foobared',
+			password: 'foo',
 			db:2,
-			port: 5003,
-			host: '39.100.25.53'
+			port: 5000,
+			host: 'localhost'
 		}
 		let logger:Logger = SingletonObjectFactory2.Instance<Logging>(Logging.name).logger(BadmanRedis.name);
 		await SingletonObjectFactory2.initWithArgs(RedisTemplate,[	new IoredisConnectionFactory(properties,logger)]);

@@ -1,6 +1,6 @@
 {
   "name": "badman-data-rabbit-starter",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "author": "BadMan",
   "description": "OOP Rabbit",
@@ -8,7 +8,7 @@
   "typings": "dist/BadmanRabbit.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TianqiHo/badman-ts/badman-data-starter/badman-data-rabbit-starter"
+    "url": "https://github.com/TianqiHo/badman-ts/tree/main/badman-data-starter/badman-data-rabbit-starter"
   },
   "files": [
     "dist/",
@@ -27,12 +27,12 @@
     "Rabbit"
   ],
   "dependencies": {
-    "amqplib": "^0.10.3"
+    "amqplib": "^0.10.3",
+    "badman-core": "0.0.6"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/amqplib": "^0.10.1",
-    "badman-core": "^0.0.5",
     "log4js": "^6.9.1"
   }
 }

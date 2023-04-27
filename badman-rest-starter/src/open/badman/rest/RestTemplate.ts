@@ -21,12 +21,12 @@ export default class RestTemplate implements RestCommands,Initializing,Disposabl
 	}
 
 
-	afterInitialized () {
-
+	async afterInitialized () {
+		return;
 	}
 
-	destroy () {
-
+	async destroy () {
+		return;
 	}
 
 

@@ -19,7 +19,7 @@ import EventObject from "./open/badman/core/event/EventObject";
 
 class BadmanCore {
     async main(this:BadmanCore){
-        await SingletonObjectFactory2.initWithArgs(Logging,['default_log4js_properties.json']);
+        await SingletonObjectFactory2.initWithArgs<Logging>(Logging,['default_log4js_properties.json']);
         let logging:Logging = SingletonObjectFactory2.Instance(Logging.name);
         logging.log4js().getLogger('cccccccccccccc').info('-----------------');
     }

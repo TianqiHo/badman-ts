@@ -34,7 +34,7 @@ export default class Logging implements Initializing{
         this.customLog4jOptions = customLog4jOptions;
     }
 
-    afterInitialized() {
+    async afterInitialized (): Promise<void> {
         if(!this.log4jsInstance){
             if(this.customLog4jOptions){
                 this.log4jsInstance = log4js.configure(this.customLog4jOptions);
@@ -43,6 +43,7 @@ export default class Logging implements Initializing{
             }
             this.log4js().getLogger().info(` Log4js configuration state is ${this.log4jsInstance.isConfigured()}`);
         }
+        return ;
     }
 
     log4js():Log4js{

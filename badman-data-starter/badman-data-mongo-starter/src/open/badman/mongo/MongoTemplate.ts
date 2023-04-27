@@ -14,13 +14,13 @@ export default class MongoTemplate extends MongoAccessor implements MongoCommand
         super(clientMongoFactory);
     }
 
-    afterInitialized () {
+    async afterInitialized () {
 
     }
 
-    destroy () {
+   async destroy () {
 
-    }
+   }
 
     async insert<T>(dbName:string,tableName:string,data:T):Promise<string> {
         let connection:MongoConnection = await this.createConnection(dbName,tableName);

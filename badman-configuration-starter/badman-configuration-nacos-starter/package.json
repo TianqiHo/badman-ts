@@ -1,13 +1,13 @@
 {
   "name": "badman-configuration-nacos-starter",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "license": "MIT",
   "private": false,
   "typings": "dist/BadmanNacosConfigurer.d.ts",
   "main": "dist/BadmanNacosConfigurer.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TianqiHo/badman-ts/badman-configuration-starter/badman-configuration-nacos-starter"
+    "url": "https://github.com/TianqiHo/badman-ts/tree/main/badman-configuration-starter/badman-configuration-nacos-starter"
   },
   "scripts": {
     "windowsrebuild": "rd/s/q dist && tsc",

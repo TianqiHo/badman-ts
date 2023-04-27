@@ -23,7 +23,7 @@ export default class ClientSimpleMongoFactory extends AbstractClientMongoFactory
     }
 
 
-    afterInitialized () {
+    async afterInitialized () {
         if(this.multiMongoProperties){
 
             let appName:string = (+Date.now()).toString();

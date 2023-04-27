@@ -31,7 +31,7 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 	}
 
 
-	afterInitialized () {
+	async afterInitialized () {
 
 		//监听connection连接事件
 		this.webSocketServer.on('connection', async (ws:WebSocket, request:any) => {
