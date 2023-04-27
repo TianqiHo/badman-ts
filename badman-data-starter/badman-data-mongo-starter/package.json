@@ -1,0 +1,38 @@
+{
+  "name": "badman-data-mongo-starter",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "oop mongo",
+  "main": "dist/BadmanMongo.js",
+  "typings": "dist/BadmanMongo.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TianqiHo/badman-ts/badman-data-starter/badman-data-mongo-starter"
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "readme.MD"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "windowsrebuild": "rd/s/q dist && tsc",
+    "windowsbuild": "tsc",
+    "start": "tsc && node ./dist/BadmanMongo",
+    "windowsclean": "rd/s/q dist"
+  },
+  "keywords": [
+    "oop",
+    "mongo"
+  ],
+  "author": "BadMan",
+  "dependencies": {
+    "badman-core": "^0.0.5",
+    "mongoose": "^7.0.4",
+    "mongodb": "^5.2.0",
+    "log4js": "^6.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "badman-core",
+  "version": "0.0.5",
+  "private": false,
+  "license": "MIT",
+  "typings": "dist/BadmanCore.d.ts",
+  "main": "dist/BadmanCore.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TianqiHo/badman-ts/badman-core"
+  },
+  "files": [
+    "dist/",
+    "default_log4js_properties.json",
+    "LICENSE",
+    "readme.MD"
+  ],
+  "keywords": ["OOP","loadBalance algorithm","log4j","SingletonObject","EventObject"],
+  "scripts": {
+    "linuxrebuild": "rm -rf ./dist && tsc",
+    "windowsbuild": "tsc",
+    "windowsrebuild": "rd/s/q dist && tsc",
+    "start": "tsc && node ./dist/BadmanCore",
+    "linuxclean": "rm -rf ./dist"
+  },
+  "dependencies": {
+    "log4js": "^6.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "badman-discovery-nacos-starter",
+  "version": "0.0.4",
+  "description": "OOP Discovery Nacos",
+  "license": "MIT",
+  "main": "dist/BadmanNacosDiscovery.js",
+  "typings": "dist/BadmanNacosDiscovery.d.ts",
+  "author": "BadMan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TianqiHo/badman-ts/badman-discovery-starter/badman-discovery-nacos-starter"
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "readme.MD"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "windowsrebuild": "rd/s/q dist && tsc",
+    "windowsbuild": "tsc",
+    "start": "tsc && node ./dist/BadmanNacosDiscovery",
+    "windowsclean": "rd/s/q dist"
+  },
+  "keywords": [
+    "OOP",
+    "Discovery",
+    "Nacos"
+  ],
+
+  "dependencies": {
+    "nacos-naming": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "badman-core": "^0.0.5",
+    "badman-rest-starter": "0.0.5",
+    "log4js": "^6.9.1"
+  }
+}
