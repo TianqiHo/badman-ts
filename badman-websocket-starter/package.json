@@ -1,6 +1,6 @@
 {
   "name": "badman-websocket-starter",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "oop websocket server",
   "private": false,
   "author": "BadMan",
