@@ -55,8 +55,20 @@ export default class NacosConfigurer implements Initializing{
         this.nacos = new NacosConfigClient(options);
     }
 
-    get(key):unknown {
-        return this.properties?this.properties[key] : null;
+    get<T>(key:string):T {
+        let ketElements:string[] = key.split('.');
+        let everyLayer:any = null;
+        for (let i = 0; i < ketElements.length; i++) {
+            if(everyLayer){
+                everyLayer = everyLayer[ketElements[i]];
+            }else{
+                everyLayer = this.properties[ketElements[i]];
+            }
+            if(!everyLayer){
+                throw new Error(`${key} is non-existent`);
+            }
+        }
+        return <T>everyLayer;//this.properties? <T>this.properties[key] : null;
     }
 
     async afterInitialized() {

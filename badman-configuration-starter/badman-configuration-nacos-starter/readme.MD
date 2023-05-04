@@ -41,5 +41,6 @@ Code:
             password : LocalConfigurer.getEnvironmentValue('NACOS_PASSWORD'),
         };
         let nacosConfigurer:NacosConfigurer = await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
-        logger.info(nacosConfigurer.get('TEST'));
+
+        let a:A = nacosConfigurer.get<A>('baidu.map')
     }

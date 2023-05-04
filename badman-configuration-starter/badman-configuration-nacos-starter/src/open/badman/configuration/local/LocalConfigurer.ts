@@ -9,7 +9,7 @@ export default class LocalConfigurer implements Initializing{
     constructor () {}
 
 
-    afterInitialized() {
+   async afterInitialized() {
         dotenv.config();
     }
 
