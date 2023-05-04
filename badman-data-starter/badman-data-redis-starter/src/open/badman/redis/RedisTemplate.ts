@@ -17,10 +17,20 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 	}
 
 
+	async hashExists (key: RedisKeyType, field: RedisKeyType): Promise<boolean> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisHashCommands().hashExists(key,field);
+	}
+
 	async hashDel (key: RedisKeyType, ...fields:RedisKeyType[]): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
 		// @ts-ignore
 		return await redisConnection.redisHashCommands().hashDel(key, fields.flat(1));
+	}
+
+	async hashGetAll (key: RedisKeyType): Promise<Record<string, string>> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisHashCommands().hashGetAll(key);
 	}
 
 	async hashGet (key: RedisKeyType, field: RedisKeyType): Promise<StringOrNullType> {
@@ -31,6 +41,11 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 	async hashSet (key: RedisKeyType, entry: Map<RedisValueType, RedisValueType>): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
 		return await redisConnection.redisHashCommands().hashSet(key, entry)
+	}
+
+	async hashLen (key: RedisKeyType): Promise<number> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisHashCommands().hashLen(key)
 	}
 
 	async hashStrlen (key: RedisKeyType, field: RedisKeyType): Promise<number> {
@@ -106,11 +121,11 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	}
 
-	afterInitialized () {
+	async afterInitialized () {
 
 	}
 
-	destroy () {
+	async destroy () {
 
 	}
 

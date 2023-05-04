@@ -1,6 +1,6 @@
 {
   "name": "badman-data-redis-starter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "OOP Redis",
   "author": "BadMan",
   "license": "MIT",
@@ -30,7 +30,7 @@
 
   "dependencies": {
     "ioredis": "^5.3.2",
-    "badman-core": "^0.0.5"
+    "badman-core": "0.0.6"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

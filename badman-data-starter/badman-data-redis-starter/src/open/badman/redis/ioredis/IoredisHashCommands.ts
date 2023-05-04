@@ -18,8 +18,16 @@ export default class IoredisHashCommands  implements RedisHashCommands{
 		return this.connection.redisClientInstance().hget(key,field);
 	}
 
+	async hashGetAll (key: RedisKeyType): Promise<Record<string, string>> {
+		return this.connection.redisClientInstance().hgetall(key);
+	}
+
 	async hashSet (key: RedisKeyType, entry: Map<RedisValueType, RedisValueType>): Promise<number>{
 		return await this.connection.redisClientInstance().hset(key,entry);
+	}
+
+	async hashLen (key: RedisKeyType): Promise<number> {
+		return await this.connection.redisClientInstance().hlen(key);
 	}
 
 	async hashStrlen (key: RedisKeyType, field: RedisKeyType): Promise<number>{
@@ -34,6 +42,11 @@ export default class IoredisHashCommands  implements RedisHashCommands{
 
 		// @ts-ignore
 		return  await this.connection.redisClientInstance().hdel(key,fields.flat(1));
+	}
+
+	async hashExists (key: RedisKeyType, field: RedisKeyType): Promise<boolean> {
+		let n:number =  await this.connection.redisClientInstance().hexists(key,field);
+		return n===0?false:true;
 	}
 
 }
