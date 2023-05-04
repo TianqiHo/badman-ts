@@ -29,7 +29,7 @@ Declare Instances:
 
 
 
-    export default class DemoConsumer implements RabbitConsumer<Channel, ConsumeMessage>{
+    export default class DemoProducer implements RabbitConsumer<Channel, ConsumeMessage>{
 
          private rabbitTemplate:RabbitTemplate
 

@@ -1,6 +1,6 @@
 {
   "name": "badman-websocket-starter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "oop websocket server",
   "private": false,
   "author": "BadMan",
@@ -30,12 +30,12 @@
     "WebsocketServer"
   ],
   "dependencies": {
-    "badman-core": "^0.0.6",
     "ws": "^8.10.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/ws": "^8.5.4",
-    "log4js": "^6.9.1"
+    "log4js": "^6.9.1",
+    "badman-core": "^0.0.8"
   }
 }

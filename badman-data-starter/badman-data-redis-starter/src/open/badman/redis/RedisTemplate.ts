@@ -103,6 +103,10 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 		return await redisConnection.redisStringCommands().setVal(key,value);
 	}
 
+	async setNXValExpire (key: RedisKeyType, value: RedisValueType, secondsExpire: number | string): Promise<boolean> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisStringCommands().setNXValExpire(key,value,secondsExpire);
+	}
 
 	async zSetRem (key: RedisKeyType, ...members): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();

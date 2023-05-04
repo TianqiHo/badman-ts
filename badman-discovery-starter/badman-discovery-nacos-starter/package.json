@@ -1,6 +1,6 @@
 {
   "name": "badman-discovery-nacos-starter",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "OOP Discovery Nacos",
   "license": "MIT",
   "main": "dist/BadmanNacosDiscovery.js",
@@ -29,12 +29,12 @@
   ],
 
   "dependencies": {
-    "badman-core": "^0.0.6",
-    "badman-rest-starter": "0.0.6",
     "nacos-naming": "^2.5.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "log4js": "^6.9.1"
+    "log4js": "^6.9.1",
+    "badman-core": "0.0.8",
+    "badman-rest-starter": "0.0.8"
   }
 }

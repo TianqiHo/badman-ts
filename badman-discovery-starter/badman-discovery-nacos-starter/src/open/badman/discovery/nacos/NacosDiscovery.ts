@@ -51,7 +51,8 @@ export default class NacosDiscovery implements Initializing{
 
 			let ipv4:string | undefined = this.serverProperties.thisServerIp;
 			if(!ipv4){
-				ipv4 = new NetParser().parseIPV4Address();
+				//ipv4 = new NetParser().parseIPV4Address();
+				ipv4 = '0.0.0.0';
 			}
 
 			let port:number | undefined = this.serverProperties.thisServerPort;

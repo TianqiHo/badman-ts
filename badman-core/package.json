@@ -1,6 +1,6 @@
 {
   "name": "badman-core",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "private": false,
   "license": "MIT",
   "typings": "dist/BadmanCore.d.ts",
@@ -15,7 +15,7 @@
     "LICENSE",
     "readme.MD"
   ],
-  "keywords": ["OOP","loadBalance algorithm","log4j","SingletonObject","EventObject"],
+  "keywords": ["OOP","loadBalance algorithm","log4j","SingletonObject","EventObject","snowflake"],
   "scripts": {
     "linuxrebuild": "rm -rf ./dist && tsc",
     "windowsbuild": "tsc",
@@ -24,9 +24,10 @@
     "linuxclean": "rm -rf ./dist"
   },
   "dependencies": {
-    "log4js": "^6.7.0"
+
   },
   "devDependencies": {
-    "@types/node": "^18.15.11"
+    "@types/node": "^18.15.11",
+    "log4js": "^6.9.1"
   }
 }

@@ -30,6 +30,15 @@ export default class IoredisStringCommands implements RedisStringCommands{
 		return true;
 	}
 
+	async setNXValExpire (key: RedisKeyType, value: RedisValueType, secondsExpire: number | string): Promise<boolean> {
+
+		let ok:string = await this.connection.redisClientInstance().set(key,value,'EX',secondsExpire,'NX');
+		if(ok && ok === this.success){
+			return true;
+		}
+		return false;
+	}
+
 	async setNx (key: RedisKeyType, value: RedisValueType): Promise<boolean> {
 		let result:number = await this.connection.redisClientInstance().setnx(key,value);
 		if(result===1){

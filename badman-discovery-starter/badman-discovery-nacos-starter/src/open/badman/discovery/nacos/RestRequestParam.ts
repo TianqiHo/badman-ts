@@ -37,6 +37,6 @@ export default class RestRequestParam<T> {
 	/**
 	 * 参数体
 	 */
-	param:T;
+	param ?:T;
 
 }

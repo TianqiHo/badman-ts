@@ -30,7 +30,7 @@ class BadmanRest {
 
 		let rest:RestTemplate =  await SingletonObjectFactory2.initWithArgs<RestTemplate>(RestTemplate,[new AxiosHttpClientRequestFactory({
 			responseType:'arraybuffer'
-		})]);
+		}),logger]);
 
 		// let response:HttpClientResponse = await rest.post<Object,Object>('http://192.168.1.27:6999/testA',JSON.stringify({ss:'sssss'}));
 

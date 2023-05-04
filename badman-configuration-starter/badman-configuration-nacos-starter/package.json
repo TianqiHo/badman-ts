@@ -1,6 +1,6 @@
 {
   "name": "badman-configuration-nacos-starter",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
   "private": false,
   "typings": "dist/BadmanNacosConfigurer.d.ts",
@@ -28,11 +28,11 @@
   ],
   "dependencies": {
     "dotenv": "^16.0.3",
-    "badman-core": "^0.0.6",
     "nacos-config": "^2.5.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "log4js": "^6.9.1"
+    "log4js": "^6.9.1",
+    "badman-core": "0.0.8"
   }
 }

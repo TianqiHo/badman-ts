@@ -15,8 +15,8 @@ export default class RestTemplate implements RestCommands,Initializing,Disposabl
 
 	private httpClientRequestFactory:HttpClientRequestFactory;
 
-	constructor (httpClientRequestFactory:HttpClientRequestFactory) {
-		this.logger = SingletonObjectFactory2.Instance<Logging>(Logging.name).logger(this.constructor.name);
+	constructor (httpClientRequestFactory:HttpClientRequestFactory,logger:Logger) {
+		this.logger = logger;
 		this.httpClientRequestFactory = httpClientRequestFactory;
 	}
 
