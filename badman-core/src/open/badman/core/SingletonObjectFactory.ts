@@ -2,7 +2,7 @@
 
 
 /**
- * 单例对象工厂类
+ * 单例对象工厂类 (depleted)
  */
 export default abstract class SingletonObjectFactory{
 

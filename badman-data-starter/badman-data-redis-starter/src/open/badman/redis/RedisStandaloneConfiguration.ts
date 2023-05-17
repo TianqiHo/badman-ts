@@ -10,4 +10,6 @@ export default interface RedisStandaloneConfiguration extends CommonRedisOptions
 	port?:number;
 	disconnectTimeout?: number;
 	tls?: ConnectionOptions;
+
+	useLock?:boolean;
 }

@@ -8,7 +8,8 @@ import {WebSocketServer,WebSocket} from 'ws';
 import WebSocketServerProperties from "./WebSocketServerProperties";
 
 
-export default abstract class AbstractWebSocketServer<Request extends RequestBodyEntity,SocketClientConnection extends AbstractWebSocketServerConnection<Request>> implements  Initializing{
+export default abstract class AbstractWebSocketServer<Request extends RequestBodyEntity,
+														SocketClientConnection extends AbstractWebSocketServerConnection<Request>> implements  Initializing{
 
 
 	protected logger:Logger;
@@ -27,9 +28,16 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 		this.serverProperties = serverProperties;
 		this.connections = new Map<string, SocketClientConnection>();
 		this.webSocketServer = new WebSocketServer(this.serverProperties);
-		this.logger.info(`建立WebSocket服务器，监听端口:${this.serverProperties.port}，root: ${this.serverProperties.context}`);
+		this.logger.info(`建立WebSocket服务器,监听端口:${this.serverProperties.port},root: ${this.serverProperties.context}`);
 	}
 
+	getServerProperties(){
+		return this.serverProperties;
+	}
+
+	getLogger(){
+		return this.logger;
+	}
 
 	async afterInitialized () {
 
@@ -37,11 +45,22 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 		this.webSocketServer.on('connection', async (ws:WebSocket, request:any) => {
 			let requestBody:Request = this.parseWebsocketRequest(request.url);
 			if(requestBody.clientId){
-				let r:boolean = await this.addConnection(ws, requestBody);
-				if(r){
-					ws.send('{"success":true}');
-				}else{
-					ws.send('{"success":false,"msg":"后台服务异常"}');
+
+				try {
+					let r: boolean = await this.addConnection(ws, requestBody);
+					if (r) {
+						ws.send('{"success":true}');
+					} else {
+						ws.send('{"success":false,"msg":"请联系管理员查看失败原因"}');
+						ws.close();
+					}
+				} catch (e) {
+					this.logger.error('新增websocket客户端连接失败->',e);
+					if(e.message){
+						ws.send(`{"success":false,"msg":"${e.message}"}`);
+					}else {
+						ws.send(`{"success":false,"msg":"请联系管理员查看失败原因"}`);
+					}
 					ws.close();
 				}
 			}else{
@@ -56,18 +75,13 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	private async addConnection(ws:WebSocket, requestBody:Request):Promise<boolean>{
 		this.logger.debug('新客户端开始建立链接');
-		try {
-			let newConn:SocketClientConnection = this.newConnection(requestBody,ws);
-			if(!newConn){
-				throw new Error('客户端连接无效');
-			}
-			this.connections.set(requestBody.clientId,newConn);
-			this.logger.debug(`第 ${this.connections.size}  个 connection已创建完成`);
-			return true;
-		} catch (ex) {
-			this.logger.error('新增websocket客户端连接失败->',ex);
+		let newConn:SocketClientConnection = this.newConnection(requestBody,ws);
+		if(!newConn){
+			throw new Error('客户端连接无效');
 		}
-		return false;
+		this.connections.set(requestBody.clientId,newConn);
+		this.logger.debug(`第 ${this.connections.size}  个 connection已创建完成`);
+		return true;
 	}
 
 	protected abstract newConnection(requestBody:Request,ws:WebSocket):SocketClientConnection;
@@ -91,19 +105,24 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 	}
 
 
+	public forceDeleteConnection(clientId:string):boolean{
+		let r = this.connections.delete(clientId);
+		this.logger.debug(`强制删除websocket客户端编号 clientId= ${clientId} 连接完毕`);
+		return r;
+	}
 
-	public deleteConnection(key:string):boolean{
-		let connection:SocketClientConnection = this.connections.get(key);
+	public deleteConnection(clientId:string):boolean{
+		let connection:SocketClientConnection = this.connections.get(clientId);
 		if(	this.canDeleteConnection(connection)){
-			let r = this.connections.delete(key);
-			this.logger.debug(`websocket客户端编号 clientId= ${key} 的连接删除完毕`);
+			let r = this.connections.delete(clientId);
+			this.logger.debug(`删除websocket客户端编号 clientId= ${clientId} 连接完毕`);
 			return r;
 		}
 		return false;
-	};
+	}
 
-	public obtainConnection (key:string):SocketClientConnection{
-		return this.connections.get(key);
+	public obtainConnection (clientId:string):SocketClientConnection{
+		return this.connections.get(clientId);
 	}
 
 	protected abstract canDeleteConnection(connection:SocketClientConnection):boolean;

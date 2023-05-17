@@ -84,17 +84,7 @@ export default class Snowflake implements Initializing{
 
     private snowflakeProperties:SnowflakeProperties;
 
-
-    afterInitialized (): Promise<void> {
-
-        return ;
-    }
-
-
-
     /**
-     *Creates an instance of Genid.
-     * @author zhupengfeivip
      * @param {{
      *     baseTime: 1577836800000,  // 基础时间（ms 单位），默认2020年1月1日，不能超过当前系统时间，一旦投入使用就不能再更改，更改后产生的ID可能会和以前的重复
      *     WorkerId: Number, // 机器码，必须由外部设定，最大值 2^WorkerIdBitLength-1
@@ -104,55 +94,60 @@ export default class Snowflake implements Initializing{
      *     MinSeqNumber: 5, // 最小序列数（含），默认值 5，取值范围 [5, MaxSeqNumber]，每毫秒的前 5 个序列数对应编号 0-4 是保留位，其中 1-4 是时间回拨相应预留位，0 是手工新值预留位
      *     TopOverCostCount: 2000// 最大漂移次数（含），默认 2000，推荐范围 500-10000（与计算能力有关）
      * }} options
-     * @memberof Genid
      */
-    private constructor(options: SnowflakeProperties) {
+    constructor(options: SnowflakeProperties) {
+
         if (options.workerId === undefined)
             throw new Error("lost WorkerId")
 
+        this.snowflakeProperties = options;
+    }
+
+    async afterInitialized (): Promise<void> {
+
         // 1.baseTime 2020年1月1日 Wed, 01 Jan 2020 00:00:00 GMT 0时区的2020年1月1日
         const BaseTime = 1577836800000
-        if (!options.baseTime || options.baseTime < 0)
-            options.baseTime = BaseTime
+        if (!this.snowflakeProperties.baseTime || this.snowflakeProperties.baseTime < 0)
+            this.snowflakeProperties.baseTime = BaseTime
 
         // 2.WorkerIdBitLength
         const WorkerIdBitLength = 6
-        if (!options.workerIdBitLength || options.workerIdBitLength < 0)
-            options.workerIdBitLength = WorkerIdBitLength
+        if (!this.snowflakeProperties.workerIdBitLength || this.snowflakeProperties.workerIdBitLength < 0)
+            this.snowflakeProperties.workerIdBitLength = WorkerIdBitLength
 
         // 4.SeqBitLength
         const seqBitLength = 6
-        if (!options.seqBitLength || options.seqBitLength < 0)
-            options.seqBitLength = seqBitLength
+        if (!this.snowflakeProperties.seqBitLength || this.snowflakeProperties.seqBitLength < 0)
+            this.snowflakeProperties.seqBitLength = seqBitLength
 
         // 5.MaxSeqNumber
-        if (options.maxSeqNumber == undefined || options.maxSeqNumber <= 0)
-            options.maxSeqNumber = (1 << options.seqBitLength) - 1
+        if (this.snowflakeProperties.maxSeqNumber == undefined || this.snowflakeProperties.maxSeqNumber <= 0)
+            this.snowflakeProperties.maxSeqNumber = (1 << this.snowflakeProperties.seqBitLength) - 1
 
         // 6.MinSeqNumber
         const MinSeqNumber = 5
-        if (options.minSeqNumber == undefined || options.minSeqNumber < 0)
-            options.minSeqNumber = MinSeqNumber
+        if (this.snowflakeProperties.minSeqNumber == undefined || this.snowflakeProperties.minSeqNumber < 0)
+            this.snowflakeProperties.minSeqNumber = MinSeqNumber
 
         // 7.Others
         const topOverCostCount = 2000
-        if (options.topOverCostCount == undefined || options.topOverCostCount < 0)
-            options.topOverCostCount = topOverCostCount
+        if (this.snowflakeProperties.topOverCostCount == undefined || this.snowflakeProperties.topOverCostCount < 0)
+            this.snowflakeProperties.topOverCostCount = topOverCostCount
 
 
-        if (options.method !== 2)
-            options.method = 1
+        if (this.snowflakeProperties.method !== 2)
+            this.snowflakeProperties.method = 1
         else
-            options.method = 2
+            this.snowflakeProperties.method = 2
 
-        this.method = BigInt(options.method)
-        this.baseTime = BigInt(options.baseTime)
-        this.workerId = BigInt(options.workerId)
-        this.workerIdBitLength = BigInt(options.workerIdBitLength)
-        this.seqBitLength = BigInt(options.seqBitLength)
-        this.maxSeqNumber = BigInt(options.maxSeqNumber)
-        this.minSeqNumber = BigInt(options.minSeqNumber)
-        this.topOverCostCount = BigInt(options.topOverCostCount)
+        this.method = BigInt(this.snowflakeProperties.method)
+        this.baseTime = BigInt(this.snowflakeProperties.baseTime)
+        this.workerId = BigInt(this.snowflakeProperties.workerId)
+        this.workerIdBitLength = BigInt(this.snowflakeProperties.workerIdBitLength)
+        this.seqBitLength = BigInt(this.snowflakeProperties.seqBitLength)
+        this.maxSeqNumber = BigInt(this.snowflakeProperties.maxSeqNumber)
+        this.minSeqNumber = BigInt(this.snowflakeProperties.minSeqNumber)
+        this.topOverCostCount = BigInt(this.snowflakeProperties.topOverCostCount)
 
         const timestampShift = this.workerIdBitLength + this.seqBitLength
         const currentSeqNumber = this.minSeqNumber
@@ -165,6 +160,7 @@ export default class Snowflake implements Initializing{
         this.turnBackIndex = 0
         this.isOverCost = false
         this.overCostCountInOneTerm = 0
+
     }
 
 

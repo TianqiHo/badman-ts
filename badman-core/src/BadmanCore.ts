@@ -8,7 +8,7 @@ import AbstractLoadBalancer from "./open/badman/core/loadbalance/AbstractLoadBal
 import WeightedRoundRobinLoadBalancer from "./open/badman/core/loadbalance/WeightedRoundRobinLoadBalancer";
 import Logging from "./open/badman/core/logging/Logging";
 import NetParser from "./open/badman/core/net/NetParser";
-import SingletonObjectFactory from "./open/badman/core/SingletonObjectFactory";
+import Beans from "./open/badman/core/Beans";
 import SingletonObjectFactory2 from "./open/badman/core/SingletonObjectFactory2";
 import Order from "./open/badman/core/Order";
 import InstantiationAwarePostProcessor from "./open/badman/core/InstantiationAwarePostProcessor";
@@ -18,6 +18,7 @@ import EventListenerContext from "./open/badman/core/event/EventListenerContext"
 import EventObject from "./open/badman/core/event/EventObject";
 import Snowflake from "./open/badman/core/uuid/sf/Snowflake";
 import SnowflakeProperties from "./open/badman/core/uuid/sf/SnowflakeProperties";
+
 
 
 class BadmanCore {
@@ -34,7 +35,7 @@ class BadmanCore {
 
 export {
     Logging,
-    SingletonObjectFactory,
+    Beans,
     SingletonObjectFactory2,
     Initializing,
     NetParser,

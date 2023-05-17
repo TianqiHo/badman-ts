@@ -1,6 +1,6 @@
 {
   "name": "badman-data-rabbit-starter",
-  "version": "0.0.9",
+  "version": "0.10.0",
   "license": "MIT",
   "author": "BadMan",
   "description": "OOP Rabbit",
@@ -33,6 +33,6 @@
     "@types/node": "^18.15.11",
     "@types/amqplib": "^0.10.1",
     "log4js": "^6.9.1",
-    "badman-core": "0.0.8"
+    "badman-core": "^0.1.4"
   }
 }

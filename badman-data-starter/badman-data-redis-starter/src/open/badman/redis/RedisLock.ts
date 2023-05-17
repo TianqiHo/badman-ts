@@ -2,7 +2,10 @@
 
 export default interface RedisLock {
 
-	lock();
+	lock(key:string,ttl:number,setting:any);
 
-	unLock();
+	unLock(key: string);
+
+	delay(millisecond:number);
+
 }

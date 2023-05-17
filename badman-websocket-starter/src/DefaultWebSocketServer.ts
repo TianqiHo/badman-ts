@@ -17,7 +17,8 @@ export default class DefaultWebSocketServer extends AbstractWebSocketServer<Requ
 	}
 
 	protected newConnection (requestBody: RequestBodyEntity, ws: WebSocket): DefaultClientConnection {
-		return new DefaultClientConnection(this.serverProperties,ws,requestBody);
+
+		return new DefaultClientConnection(this,ws,requestBody);
 	}
 
 }

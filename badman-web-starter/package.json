@@ -33,6 +33,6 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "log4js": "^6.9.1",
-    "badman-core": "^0.0.5"
+    "badman-core": "^0.1.4"
   }
 }

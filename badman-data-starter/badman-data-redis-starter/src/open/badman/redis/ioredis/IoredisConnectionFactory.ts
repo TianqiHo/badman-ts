@@ -6,11 +6,13 @@ import {Logger} from "log4js";
 import RedisClusterConnection from "../RedisClusterConnection";
 import RedisConnection from "../RedisConnection";
 import RedisConnectionFactory from "../RedisConnectionFactory";
+import RedisLock from "../RedisLock";
 import RedisSentinelConnection from "../RedisSentinelConnection";
 import RedisStandaloneConfiguration from "../RedisStandaloneConfiguration";
 import RedisTemplate from "../RedisTemplate";
 import IoredisClientConfiguration from "./IoredisClientConfiguration";
 import IoredisConnection from "./IoredisConnection";
+import IoredisLockFactory from "./IoredisLockFactory";
 
 
 export default class IoredisConnectionFactory implements RedisConnectionFactory{
@@ -22,6 +24,8 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 	private readonly redisClient:Redis;
 
 	private readonly logger:Logger;
+
+	private readonly ioredisLockFactory:IoredisLockFactory;
 
 	constructor (redisStandaloneConfiguration:RedisStandaloneConfiguration,logger?:Logger,
 	             ioredisClientConfiguration?:IoredisClientConfiguration) {
@@ -51,6 +55,18 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 			});
 		}
 
+		if(redisStandaloneConfiguration.useLock){
+			this.ioredisLockFactory = new IoredisLockFactory(this.redisClient);
+		}
+
+	}
+
+	getLock():RedisLock{
+		if(this.ioredisLockFactory){
+			return this.ioredisLockFactory.getRedLock();
+		}else{
+			new Error('Property useLock must be true');
+		}
 	}
 
 	getConnection (): RedisConnection {

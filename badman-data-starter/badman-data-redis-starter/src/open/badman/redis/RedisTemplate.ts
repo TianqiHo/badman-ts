@@ -10,7 +10,7 @@ import RedisLock from "./RedisLock";
 
 
 
-export default class RedisTemplate extends RedisAccesscor implements RedisCommands,RedisLock,Initializing,Disposable{
+export default class RedisTemplate extends RedisAccesscor implements RedisCommands,Initializing,Disposable{
 
 	constructor (redisConnectionFactory:RedisConnectionFactory) {
 		super(redisConnectionFactory);
@@ -110,20 +110,18 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	async zSetRem (key: RedisKeyType, ...members): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-
 		// @ts-ignore
 		return await redisConnection.redisZSetCommands().zSetRem(key,members.flat(1));
 	}
 
 
 
-	lock () {
-
+	getLock(lockKey: string) {
+		let redisLock:RedisLock = this.redisConnectionFactory.getLock();
+		return redisLock;
 	}
 
-	unLock () {
 
-	}
 
 	async afterInitialized () {
 
