@@ -16,7 +16,7 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	protected webSocketServer:WebSocketServer;
 
-	private connections:Map<string,SocketClientConnection>;
+	private readonly connections:Map<string,SocketClientConnection>;
 
 	protected serverProperties:WebSocketServerProperties;
 
@@ -28,7 +28,7 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 		this.serverProperties = serverProperties;
 		this.connections = new Map<string, SocketClientConnection>();
 		this.webSocketServer = new WebSocketServer(this.serverProperties);
-		this.logger.info(`建立WebSocket服务器,监听端口:${this.serverProperties.port},root: ${this.serverProperties.context}`);
+		this.logger.info(`建立WebSocket服务器,监听端口:${this.serverProperties.port},root: ${this.serverProperties.path?this.serverProperties.path:this.serverProperties.context}`);
 	}
 
 	getServerProperties(){
@@ -37,6 +37,15 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	getLogger(){
 		return this.logger;
+	}
+
+	getRuntimeRequests():Array<Request>{
+		let all : Request[] = [];
+		this.connections.forEach((value, key, map)=>{
+			let r:Request = value.getRequestBody;
+			all.push(r);
+		});
+		return all;
 	}
 
 	async afterInitialized () {
@@ -75,6 +84,9 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	private async addConnection(ws:WebSocket, requestBody:Request):Promise<boolean>{
 		this.logger.debug('新客户端开始建立链接');
+		if(this.connections.has(requestBody.clientId)){
+			throw new Error(`客户端连接创建失败,${requestBody.clientId}[${requestBody.clientName}]已存在`);
+		}
 		let newConn:SocketClientConnection = this.newConnection(requestBody,ws);
 		if(!newConn){
 			throw new Error('客户端连接无效');
@@ -107,7 +119,7 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	public forceDeleteConnection(clientId:string):boolean{
 		let r = this.connections.delete(clientId);
-		this.logger.debug(`强制删除websocket客户端编号 clientId= ${clientId} 连接完毕`);
+		this.logger.debug(`强制删除websocket客户端编号 clientId= ${clientId} 连接完毕,isDeleted = ${r}`);
 		return r;
 	}
 

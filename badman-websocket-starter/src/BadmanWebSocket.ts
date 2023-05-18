@@ -34,15 +34,18 @@ export default class BadmanWebSocket {
 
 		let logging:Logging = await SingletonObjectFactory2.initWithArgs<Logging>(Logging,[defaultConfiguration]);
 		let logger:Logger = logging.logger(BadmanWebSocket.name);
-		let properties:WebSocketServerProperties={
+
+		let properties:WebSocketServerProperties = {
 				port: 1000,
-				context: 'custom',
-				heartBeatInterval : 3000
-		};
-		new DefaultWebSocketServer(properties,logger).afterInitialized();
+				path: '/custom',
+				heartBeatInterval : 10000
+		}
+
+		await new DefaultWebSocketServer(properties,logger).afterInitialized();
 	}
 
 }
+
 
 // (() => {
 // 	new BadmanWebSocket().main();

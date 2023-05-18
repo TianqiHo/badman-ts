@@ -8,10 +8,10 @@ import WebSocketServerProperties from "./WebSocketServerProperties";
 
 export default abstract class AbstractWebSocketServerConnection<Request extends RequestBodyEntity> {
 
-    private wsClient: WebSocket;
-    private readonly requestBody: Request;
+    protected wsClient: WebSocket;
+    protected requestBody: Request;
     private isAlive: boolean = false;
-    private readonly intervalPing: NodeJS.Timer;
+    private intervalPing: NodeJS.Timer;
     protected serverProperties:WebSocketServerProperties;
     protected server:AbstractWebSocketServer<Request, AbstractWebSocketServerConnection<Request>>;
     protected logger:Logger;
@@ -70,6 +70,18 @@ export default abstract class AbstractWebSocketServerConnection<Request extends 
         clearInterval(this.intervalPing);
         //todo 删除连接池中的当前引用
         this.server.forceDeleteConnection(this.requestBody.clientId);
+
+    }
+
+    close(){
+        this.wsClient.terminate();
+        this.isAlive=false;
+        clearInterval(this.intervalPing);
+        this.server = undefined;
+        this.serverProperties = undefined;
+        this.requestBody = undefined;
+        this.intervalPing = undefined;
+        this.logger = undefined;
     }
 
     /**
