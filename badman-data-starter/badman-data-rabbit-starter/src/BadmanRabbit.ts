@@ -30,15 +30,15 @@ export default class BadmanRabbit {
 
 		let rabbitProperties:RabbitProperties = {
 			rabbit:{
-				protocol: "amqp",
-				hostname:"localhost",
-				port: 5672,
-				username: "12345",
-				password: "122212",
-				locale: "en_US",
-				frameMax: 0,
-				heartbeat: 1,
-				vhost: "/",
+				"protocol": "amqp",
+				"hostname":"localhost",
+				"port": 5672,
+				"username": "root",
+				"password": "rabbitmq",
+				"locale": "en_US",
+				"frameMax": 0,
+				"heartbeat": 1,
+				"vhost": "/",
 			},
 			socket:{
 				timeout: 10000,

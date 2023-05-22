@@ -30,6 +30,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 
 		this.logger = logger;
 		this.rabbitProperties = rabbitProperties;
+		this.closed = true;
 		this.c = require('amqplib/lib/connection');
 		this.domain = new Domain();
 		this.domain.on('error',async (err) => {
@@ -41,9 +42,9 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 	async afterInitialized () {
 
 		await this.domain.run(async () => {
-			process.nextTick(async () => {
+			//process.nextTick(async () => {
 				await this.connecting();
-			});
+			//});
 		});
 	}
 
@@ -66,6 +67,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 	async createConnection (): Promise<RabbitConnection> {
 
 		if(this.isClosed()){
+			this.logger.info('重新连接');
 			await this.recovery();
 		}
 
@@ -81,7 +83,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 	}
 
 	async recovery(){
-		await this.connecting();
+		await this.afterInitialized();
 	}
 
 }
