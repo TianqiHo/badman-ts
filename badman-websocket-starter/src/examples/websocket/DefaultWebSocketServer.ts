@@ -2,10 +2,10 @@
 
 import {Logger} from "log4js";
 import WebSocket from "ws";
+import AbstractWebSocketServer from "../../open/badman/websocket/AbstractWebSocketServer";
+import RequestBodyEntity from "../../open/badman/websocket/RequestBodyEntity";
+import WebSocketServerProperties from "../../open/badman/websocket/WebSocketServerProperties";
 import DefaultClientConnection from "./DefaultClientConnection";
-import AbstractWebSocketServer from "./open/badman/websocket/AbstractWebSocketServer";
-import RequestBodyEntity from "./open/badman/websocket/RequestBodyEntity";
-import WebSocketServerProperties from "./open/badman/websocket/WebSocketServerProperties";
 
 export default class DefaultWebSocketServer extends AbstractWebSocketServer<RequestBodyEntity,DefaultClientConnection>{
 

@@ -55,7 +55,8 @@ export default abstract class AbstractWebSocketServerConnection<Request extends 
 
     abstract onMessage (msg:Buffer);
 
-    protected sendMessage(message:string){
+
+    sendMessage(message:string){
         this.wsClient.send(message);
     }
 

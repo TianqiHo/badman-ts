@@ -1,9 +1,13 @@
+
+import createApplication, {Application} from "express";
+import * as Http from "http";
 import {Logging, SingletonObjectFactory2} from "badman-core";
 import {Configuration, Logger} from "log4js";
-import DefaultWebSocketServer from "../DefaultWebSocketServer";
-import WebSocketServerProperties from "../open/badman/websocket/WebSocketServerProperties";
+import WebSocketServerProperties from "../../open/badman/websocket/WebSocketServerProperties";
+import DefaultWebSocketServer from "./DefaultWebSocketServer";
 
-export default class NoServerTypeSocket {
+
+export default class ServerTypeSocket {
 
 	async main(){
 
@@ -24,14 +28,23 @@ export default class NoServerTypeSocket {
 		};
 
 		let logging:Logging = await SingletonObjectFactory2.initWithArgs<Logging>(Logging,[defaultConfiguration]);
-		let logger:Logger = logging.logger(NoServerTypeSocket.name);
+		let logger:Logger = logging.logger(ServerTypeSocket.name);
+
+		let app:Application = createApplication();
+		let server:Http.Server = app.listen(1000);
 
 		let properties:WebSocketServerProperties = {
-			port: 1000,
 			path: '/custom',
-			heartBeatInterval : 10000
+			heartBeatInterval : 10000,
+			server:server
 		}
+
 		await new DefaultWebSocketServer(properties,logger).afterInitialized();
+
+		// app.get('/t',(req,res)=>{
+		// 	logger.info(`${JSON.stringify(req.params)}`);
+		// 	res.json({"success":true});
+		// });
 
 	}
 

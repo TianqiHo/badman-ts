@@ -3,9 +3,9 @@
 import {Logging, SingletonObjectFactory2} from "badman-core";
 
 import WebSocket from "ws";
-import AbstractWebSocketServer from "./open/badman/websocket/AbstractWebSocketServer";
-import AbstractWebSocketServerConnection from "./open/badman/websocket/AbstractWebSocketServerConnection";
-import RequestBodyEntity from "./open/badman/websocket/RequestBodyEntity";
+import AbstractWebSocketServer from "../../open/badman/websocket/AbstractWebSocketServer";
+import AbstractWebSocketServerConnection from "../../open/badman/websocket/AbstractWebSocketServerConnection";
+import RequestBodyEntity from "../../open/badman/websocket/RequestBodyEntity";
 
 
 export default class DefaultClientConnection extends AbstractWebSocketServerConnection<RequestBodyEntity>{

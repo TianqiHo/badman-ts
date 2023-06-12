@@ -1,7 +1,8 @@
 {
+
   "name": "badman-websocket-starter",
-  "version": "0.0.8",
-  "description": "oop websocket server",
+  "version": "0.0.9",
+  "description": "oop chat websocket udp ",
   "private": false,
   "author": "BadMan",
   "license": "MIT",
@@ -13,8 +14,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "windowsrebuild": "rd/s/q dist && tsc",
-    "windowsbuild": "tsc",
+    "w-rebuild": "rd/s/q dist && tsc",
+    "w-build": "tsc",
+    "w-start": "tsc && node --inspect ./dist/BadmanWebSocket",
     "start": "tsc && node ./dist/BadmanWebSocket",
     "windowsclean": "rd/s/q dist"
   },
@@ -27,17 +29,23 @@
   "keywords": [
     "Design patterns",
     "OOP",
+    "Chat",
     "WS",
-    "WebsocketServer"
+    "WebsocketServer",
+    "Udp"
   ],
   "dependencies": {
-    "ws": "^8.13.0"
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/ws": "^8.5.4",
+    "@types/socket.io": "^3.0.2",
     "log4js": "^6.9.1",
     "badman-core": "^0.1.4",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "@types/express": "^4.17.17",
+    "@socket.io/redis-adapter": "^8.2.1"
   }
 }
