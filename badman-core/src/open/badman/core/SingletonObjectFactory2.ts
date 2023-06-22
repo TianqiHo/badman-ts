@@ -4,7 +4,7 @@ import Initializing from "./Initializing";
 
 
 /**
- * 单例对象工厂类
+ * 单例对象工厂类(Depleted)
  */
 export default abstract class SingletonObjectFactory2{
 
@@ -43,17 +43,19 @@ export default abstract class SingletonObjectFactory2{
         if(!SingletonObjectFactory2.instances.has(key)){
             let instance:ClassType = Reflect.construct(ClassTypeObj,args);
             console.info(` Class[${instance.constructor.name}] Initialized`);
-            try {
+            if((<Initializing>instance).afterInitialized){
                 await (<Initializing>instance).afterInitialized();
                 console.info(` Class[${instance.constructor.name}] Initializing has runned`);
-            } catch (e) {
-                if(e instanceof TypeError){
-                    //ignore
-                    console.error('TypeError->',e);
-                }else{
-                    throw e;
-                }
             }
+            // try {
+            // } catch (e) {
+            //     if(e instanceof TypeError){
+            //         //ignore
+            //         console.error('Ignore TypeError->',e);
+            //     }else{
+            //         throw e;
+            //     }
+            // }
             SingletonObjectFactory2.instances.set(key,instance);
         }
         return SingletonObjectFactory2.Instance(key);

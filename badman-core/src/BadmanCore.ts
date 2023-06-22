@@ -2,13 +2,13 @@
 
 
 import Initializing from "./open/badman/core/Initializing";
+import SyncInitializing from "./open/badman/core/SyncInitializing";
 import RoundRobinLoadBalancer from "./open/badman/core/loadbalance/RoundRobinLoadBalancer";
 import WeightValue from "./open/badman/core/loadbalance/WeightValue";
 import AbstractLoadBalancer from "./open/badman/core/loadbalance/AbstractLoadBalancer";
 import WeightedRoundRobinLoadBalancer from "./open/badman/core/loadbalance/WeightedRoundRobinLoadBalancer";
 import Logging from "./open/badman/core/logging/Logging";
 import NetParser from "./open/badman/core/net/NetParser";
-import Beans from "./open/badman/core/Beans";
 import SingletonObjectFactory2 from "./open/badman/core/SingletonObjectFactory2";
 import Order from "./open/badman/core/Order";
 import InstantiationAwarePostProcessor from "./open/badman/core/InstantiationAwarePostProcessor";
@@ -18,26 +18,18 @@ import EventListenerContext from "./open/badman/core/event/EventListenerContext"
 import EventObject from "./open/badman/core/event/EventObject";
 import Snowflake from "./open/badman/core/uuid/sf/Snowflake";
 import SnowflakeProperties from "./open/badman/core/uuid/sf/SnowflakeProperties";
+import Beans from "./open/badman/core/bean/Beans";
+import BeanObject from "./open/badman/core/bean/BeanObject";
 
 
-
-class BadmanCore {
-    async main(this:BadmanCore){
-        await SingletonObjectFactory2.initWithArgs<Logging>(Logging,['default_log4js_properties.json']);
-        let logging:Logging = SingletonObjectFactory2.Instance(Logging.name);
-        logging.log4js().getLogger('cccccccccccccc').info('-----------------');
-    }
-}
-
-// (()=>{
-//     new BadmanCore().main();
-// })()
 
 export {
     Logging,
     Beans,
+    BeanObject,
     SingletonObjectFactory2,
     Initializing,
+    SyncInitializing,
     NetParser,
     RoundRobinLoadBalancer,
     WeightValue,

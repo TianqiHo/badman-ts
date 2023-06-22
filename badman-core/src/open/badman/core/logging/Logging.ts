@@ -1,14 +1,13 @@
 
 
 import log4js, {Configuration, Log4js, Logger} from "log4js";
-import Initializing from "../Initializing";
+import SyncInitializing from "../SyncInitializing";
 
 
 /**
  * 日志组件
  */
-export default class Logging implements Initializing{
-
+export default class Logging implements SyncInitializing{
 
     private log4jsInstance:Log4js;
 
@@ -34,14 +33,15 @@ export default class Logging implements Initializing{
         this.customLog4jOptions = customLog4jOptions;
     }
 
-    async afterInitialized (): Promise<void> {
+    afterInitialized ():void {
         if(!this.log4jsInstance){
             if(this.customLog4jOptions){
                 this.log4jsInstance = log4js.configure(this.customLog4jOptions);
+                this.log4js().getLogger().info(` Log4js configuration state is ${this.log4jsInstance.isConfigured()}`);
             }else {
                 this.log4jsInstance = log4js.configure(this.defaultConfiguration);
+                this.log4js().getLogger().info(`Default Log4js configuration state is ${this.log4jsInstance.isConfigured()}`);
             }
-            this.log4js().getLogger().info(` Log4js configuration state is ${this.log4jsInstance.isConfigured()}`);
         }
         return ;
     }
