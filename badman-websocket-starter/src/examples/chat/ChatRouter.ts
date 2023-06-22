@@ -1,8 +1,10 @@
 
+import {SingletonObjectFactory2} from "badman-core";
 import {Request, Response, Router} from "express";
 import {Logger} from "log4js";
 import ChatClientProperties from "../../open/badman/chatt/client/ChatClientProperties";
 import TalkAbout, {Copy} from "../../open/badman/chatt/entity/TalkAbout";
+import ChatServer from "../../open/badman/chatt/server/ChatServer";
 import MyClient from "./MyClient";
 
 
@@ -98,8 +100,8 @@ export default class ChatRouter {
 			let client:MyClient = this.all.get(from);
 
 			let talkAbout:TalkAbout = Copy(req.body); //new TalkAbout(null,null,null);
-			talkAbout.setNewsId(+Date.now());
-			talkAbout.setRoomIds([to]);
+			talkAbout.setNewsId((+Date.now()).toString());
+			talkAbout.setRoomId(to);
 			talkAbout.setSender(from);
 			talkAbout.setSenderName(from);
 			talkAbout.setState(false);
@@ -117,7 +119,7 @@ export default class ChatRouter {
 			let to:string = req.params.to;
 			let client:MyClient = this.all.get(from);
 			let talkAbout:TalkAbout = Copy(req.body); //new TalkAbout(null,null,null);
-			talkAbout.setNewsId(+Date.now());
+			talkAbout.setNewsId((+Date.now()).toString());
 			talkAbout.setReceiver(to);
 			talkAbout.setSender(from);
 			talkAbout.setSenderName(from);
@@ -135,6 +137,27 @@ export default class ChatRouter {
 				data[key] = value;
 			});
 			res.json({"rooms":data});
+		});
+
+		this.router.get('/roomReceivers/:excluding/:room',async (req:Request, res:Response)=>{
+
+			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
+			let receivers:string[] = await s.getReceives(req.params.excluding,req.params.room);
+			res.json({receivers:receivers});
+		});
+
+		this.router.get('/roomReceivers',async (req:Request, res:Response)=>{
+
+			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
+			let receivers:string[] = await s.getReceives(null);
+			res.json({receivers:receivers});
+		});
+
+		this.router.get('/groupByRoom',async (req:Request, res:Response)=>{
+
+			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
+			let group:Map<string,string[]> = await s.getReceivesGroupByRoomId();
+			res.json({all:group});
 		});
 
 		return this.router

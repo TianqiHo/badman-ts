@@ -2,7 +2,9 @@
 
 export default interface SentStatus{
 
-	newsId: number;
+	roomId:string;
+
+	newsId: string;
 
 	/**
 	 * true 发送成功  false 失败
@@ -15,5 +17,10 @@ export default interface SentStatus{
 	 * 发送失败原因
 	 */
 	errTip:string;
+
+	/**
+	 * 服务器转发成功时间
+	 */
+	serverSendTime: Date;
 
 }

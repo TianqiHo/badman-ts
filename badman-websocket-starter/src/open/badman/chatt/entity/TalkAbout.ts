@@ -4,7 +4,7 @@ export declare type MessageType = 1|2|3|4;
 
 export default class TalkAbout {
 
-	newsId:number;
+	newsId:string;
 
 	senderName:string;
 
@@ -15,7 +15,7 @@ export default class TalkAbout {
 	//@ 某些人
 	atReceivers:string[];
 
-	roomIds:string[];
+	roomId:string;
 
 	exceptRoomIds:string[];
 
@@ -23,11 +23,13 @@ export default class TalkAbout {
 
 	sendState:boolean;
 
-	// 1 普通文本, 2 照片, 3 语音  4 @类型
+	sendTime:Date;
+
+	// 1 系统急救动作  2 普通文本   3 照片   4 语音  5 @类型
 	messageType: MessageType
 
 
-	constructor (newsId:number,content:Buffer,messageType: MessageType) {
+	constructor (newsId:string,content:Buffer,messageType: MessageType) {
 		this.newsId = newsId;
 		this.content = content;
 		this.messageType = messageType;
@@ -46,11 +48,19 @@ export default class TalkAbout {
 		this.content = content;
 	}
 
+	setSendTime(sendTime:Date){
+		this.sendTime = sendTime;
+	}
+
+	getSendTime():Date{
+		return this.sendTime;
+	}
+
 	getContent():Buffer{
 		return this.content;
 	}
 
-	setNewsId(newsId:number){
+	setNewsId(newsId:string){
 		this.newsId = newsId;
 	}
 
@@ -91,12 +101,12 @@ export default class TalkAbout {
 	}
 
 
-	setRoomIds(roomIds:string[]){
-		this.roomIds = roomIds;
+	setRoomId(roomId:string){
+		this.roomId = roomId;
 	}
 
-	getRoomIds():string[]{
-		return this.roomIds;
+	getRoomId():string{
+		return this.roomId;
 	}
 
 	setExceptRoomIds(exceptRoomIds:string[]){
@@ -120,7 +130,8 @@ export default class TalkAbout {
 		    newsId = ${this.newsId},
 		    sender = ${this.sender},
 		    receiver = ${this.receiver},
-		    roomIds = ${this.roomIds},
+		    roomIds = ${this.roomId},
+		    sendTime = ${this.sendTime},
 		    exceptRoomIds = ${this.exceptRoomIds},
 		    messageType = ${this.messageType},
 		    content = ${this.content.toString()},

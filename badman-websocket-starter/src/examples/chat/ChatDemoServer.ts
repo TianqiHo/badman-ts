@@ -62,3 +62,7 @@ export default class ChatDemoServer {
 	}
 
 }
+
+(()=>{
+	new ChatDemoServer().main();
+})()

@@ -22,4 +22,9 @@ export default interface ReadStatus{
 	 */
 	sender:string;
 
+	/**
+	 * 阅读时间
+	 */
+	readTime:Date;
+
 }

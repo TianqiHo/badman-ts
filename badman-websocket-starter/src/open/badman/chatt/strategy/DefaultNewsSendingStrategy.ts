@@ -27,14 +27,14 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<T
 
 
 	postSending (connection: Socket, news: TalkAbout, preSendingResult: TalkAbout): Promise<void> {
-		let who:string[] = null;
+		let who:string = null;
 
-		if(news.getRoomIds()){
-			who = news.getRoomIds();
+		if(news.getRoomId()){
+			who = news.getRoomId();
 		}
 
 		if(!who && news.getReceiver()){
-			who = [news.getReceiver()];
+			who = news.getReceiver();
 		}
 
 		if(who && who.length>0){
@@ -52,9 +52,11 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<T
 		news.setState(true);
 
 		let sentStatus:Partial<SentStatus> = {
+			roomId: news.roomId,
 			state: true,
 			sender: news.sender,
-			newsId: news.newsId
+			newsId: news.newsId,
+			serverSendTime: new Date()
 		}
 
 		connection.to(news.getSender()).emit('sent',sentStatus);

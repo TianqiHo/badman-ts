@@ -2,6 +2,7 @@
 import {Initializing} from "badman-core";
 import {Logger} from "log4js";
 import {Server} from "socket.io";
+import {RemoteSocket} from "socket.io/dist/broadcast-operator";
 import {Socket} from "socket.io/dist/socket";
 import ReadStatus from "../entity/ReadStatus";
 import TalkAbout, {Copy} from "../entity/TalkAbout";
@@ -40,7 +41,6 @@ import type { Http2SecureServer } from "http2";
 // });
 //
 
-export type Room = string;
 //中转站 transfer station
 export default class ChatServer implements Initializing{
 
@@ -93,61 +93,105 @@ export default class ChatServer implements Initializing{
 
 			let customClientId:string = clientParam.name.toString();
 			if(!connection.rooms.has(customClientId)){
-				connection.join(customClientId)
-			}
-
-			//提示连接服务端并登录成功
-			connection.emit('connect_login',
-				{  success:true,
+				connection.join(customClientId);
+				//提示连接服务端并登录成功
+				connection.emit('connect_login',
+					{  success:true,
 						msg:`${this.properties.welcomeMessage?this.properties.welcomeMessage:this.defaultWelcomeMessage}(${customClientId})`,
 						id:connection.id}
-			);
+				);
+				// 监听客户端talk事件并匹配接受者（个人、群体）
+				connection.on('talkTo', async (talkAbout) => {
+					let news:TalkAbout = Copy(talkAbout);
+					let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
+					let preSendingResult = await strategy.preSending(news);
+					await strategy.postSending(connection,news,preSendingResult);
+					strategy.afterSending(connection,news);
+				});
 
-			// 监听客户端talk事件并匹配接受者（个人、群体）
-			connection.on('talkTo', async (talkAbout) => {
-				let news:TalkAbout = Copy(talkAbout);
-				let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
-				let preSendingResult = await strategy.preSending(news);
-				await strategy.postSending(connection,news,preSendingResult);
-				strategy.afterSending(connection,news);
-			});
+				//加入群聊
+				connection.on('joinRoom',(...roomIds)=>{
+					this.joinRoom(connection,roomIds);
+					this.logger.info(`${connection.data.clientName } 加入群聊 [${roomIds.join(',')}]`,'\r\n');
+				});
 
-			//加入群聊
-			connection.on('joinRoom',(...roomIds)=>{
-				this.joinRoom(connection,roomIds);
-				this.logger.info(`${connection.data.clientName } 加入群聊 [${roomIds.join(',')}]`,'\r\n');
-			});
-
-			//退出群聊
-			connection.on('leaveRoom',async (closeUnderlyingConnection:boolean,...roomIds:string[])=>{
-				if(closeUnderlyingConnection){
-					roomIds = Array.from(connection.rooms);
-					//自动退出当前room
-					connection.disconnect(closeUnderlyingConnection);
-				}else{
-					if(roomIds){
-						await this.leaveJoinRoom(connection,roomIds);
+				//退出群聊
+				connection.on('leaveRoom',async (closeUnderlyingConnection:boolean,...roomIds:string[])=>{
+					if(closeUnderlyingConnection){
+						roomIds = Array.from(connection.rooms);
+						//自动退出当前room
+						connection.disconnect(closeUnderlyingConnection);
+					}else{
+						if(roomIds){
+							await this.leaveJoinRoom(connection,roomIds);
+						}
 					}
-				}
-				this.logger.info(`${connection.data.clientName } 退出群聊 [${roomIds.join(',')}]`,'\r\n');
-			});
+					this.logger.info(`${connection.data.clientName } 退出群聊 [${roomIds.join(',')}]`,'\r\n');
+				});
 
-			//通知发送者，谁已经读了消息
-			connection.on('readMessages',(messageStatuses:ReadStatus[])=>{
+				//通知发送者，谁已经读了消息
+				connection.on('readMessages',(messageStatuses:ReadStatus[])=>{
 
-				for (let i = 0; i < messageStatuses.length; i++) {
-					let readStatus:ReadStatus = messageStatuses[i];
-					connection.to(readStatus.sender).emit('read',messageStatuses);
-				}
+					for (let i = 0; i < messageStatuses.length; i++) {
+						let readStatus:ReadStatus = messageStatuses[i];
+						connection.to(readStatus.sender).emit('read',messageStatuses);
+					}
 
-			});
+				});
+			}else{
+				this.logger.error('Repeat Longin');
+				connection.emit('reLogin',clientParam);
+				//connection.disconnect(true);
+			}
 
 		});
 	}
 
-	// getServer():Server{
-	// 	return this.server;
-	// }
+	/**
+	 * 获取聊天室成员
+	 * @param excluding 不包含
+	 * @param roomIds 聊天室
+	 */
+	async getReceives(excluding:string,...roomIds):Promise<string[]>{
+
+		let sockets: RemoteSocket<any,any>[] = [];
+		if(roomIds && roomIds.length>0){
+			sockets = await this.server.in(roomIds).fetchSockets();
+		}else {
+			sockets = await this.server.fetchSockets();
+		}
+
+		let receives:string[] = sockets.map((socket:RemoteSocket<any,any>,index)=>{
+			if(excluding && excluding !== socket.data.clientName){
+				return socket.data.clientName;
+			}else{
+				return socket.data.clientName;
+			}
+
+		});
+		return receives;
+	}
+
+	async getReceivesGroupByRoomId():Promise<any>{
+
+		let sockets: RemoteSocket<any,any>[] = await this.server.fetchSockets();
+
+		if(!sockets || sockets.length<=0){
+			return null;
+		}
+		let group:any = {};
+		sockets.forEach((socket:RemoteSocket<any,any>,index)=>{
+			let client:string = socket.data.clientName;
+			socket.rooms.forEach(value => {
+				if(group[value]){
+					group[value].push(client);
+				}else{
+					group[value]=[client];
+				}
+			});
+		})
+		return group;
+	}
 
 
 	//加入群聊
@@ -167,28 +211,4 @@ export default class ChatServer implements Initializing{
 		}
 	}
 
-
-	/**
-	 * 中转消息
-	 * @param news
-	 * @param socket
-	 */
-	talking(news:TalkAbout,connection:Socket){
-
-		let who:string[] = null;
-
-		if(news.getRoomIds()){
-			who = news.getRoomIds();
-		}
-
-		if(!who && news.getReceiver()){
-			who = [news.getReceiver()];
-		}
-
-		if(who && who.length>0){
-			connection.to(who).emit('receiveFrom',news);
-		}else{
-			this.logger.error(`当前[${news.getSender()}-${news.getContent()}]的消息发送失败,未指定接受者`,'\r\n');
-		}
-	}
 }

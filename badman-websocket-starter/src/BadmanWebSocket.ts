@@ -1,7 +1,5 @@
 
 
-import {Logging, SingletonObjectFactory2} from "badman-core";
-import {Configuration, Logger} from "log4js";
 import AbstractWebSocketServerConnection from "./open/badman/websocket/AbstractWebSocketServerConnection";
 import AbstractWebSocketServer from "./open/badman/websocket/AbstractWebSocketServer";
 import RequestBodyEntity from "./open/badman/websocket/RequestBodyEntity";
@@ -13,6 +11,7 @@ import ChatClientProperties from "./open/badman/chatt/client/ChatClientPropertie
 import ChatServer from "./open/badman/chatt/server/ChatServer";
 import ChatServerProperties from "./open/badman/chatt/server/ChatServerProperties";
 import OfflineError from "./open/badman/chatt/error/OfflineError";
+import EmptyPropertiesError from "./open/badman/chatt/error/EmptyPropertiesError";
 import ReadStatus from "./open/badman/chatt/entity/ReadStatus";
 import SentStatus from "./open/badman/chatt/entity/SentStatus";
 import TalkAbout from "./open/badman/chatt/entity/TalkAbout";
@@ -27,25 +26,6 @@ import UdpProperties from "./open/badman/udp/UdpProperties";
 export default class BadmanWebSocket {
 
 	async main(){
-
-	 let defaultConfiguration:Configuration = {
-			"appenders": {
-				"stdout_appender": {
-					"type": "stdout",
-					"layout": { "type": "pattern","pattern":"%[[CDPID(%z)]-[%d{yyyy-MM-dd hh:mm:ss.SSS} %c-%p] [%f{1}<%A>.%M(%l)] %] <=> %m %n" }
-				}
-			},
-			"categories": {
-				"default": {
-					"appenders": ["stdout_appender"],
-					"level": "debug",
-					"enableCallStack": true
-				}
-			}
-		}
-
-		let logging:Logging = await SingletonObjectFactory2.initWithArgs<Logging>(Logging,[defaultConfiguration]);
-		let logger:Logger = logging.logger(BadmanWebSocket.name);
 
 		// let properties:WebSocketServerProperties = {
 		// 		port: 1000,
@@ -117,6 +97,7 @@ export {
 	ChatServer,
 	ChatServerProperties,
 	OfflineError,
+	EmptyPropertiesError,
 	ReadStatus,
 	SentStatus,
 	TalkAbout,
