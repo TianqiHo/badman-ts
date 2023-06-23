@@ -1,6 +1,6 @@
 {
   "name": "badman-data-mongo-starter",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "license": "MIT",
   "description": "oop mongo",
   "main": "dist/BadmanMongo.js",
@@ -10,6 +10,7 @@
     "url": "https://github.com/TianqiHo/badman-ts/tree/main/badman-data-starter/badman-data-mongo-starter"
   },
   "files": [
+    "example/",
     "dist/",
     "LICENSE",
     "readme.MD"
@@ -27,12 +28,15 @@
   ],
   "author": "BadMan",
   "dependencies": {
-    "mongoose": "^7.0.4",
     "mongodb": "^5.2.0"
   },
   "devDependencies": {
+
+    "mongoose": "^7.3.0",
     "log4js": "^6.9.1",
     "@types/node": "^18.15.11",
-    "badman-core": "^0.1.4"
+    "badman-core": "^0.1.7",
+    "@types/mongodb": "^4.0.7",
+    "@types/mongoose": "^5.11.97"
   }
 }

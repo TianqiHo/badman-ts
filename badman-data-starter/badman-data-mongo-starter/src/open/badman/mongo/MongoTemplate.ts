@@ -1,7 +1,17 @@
 
 
 import {Disposable, Initializing} from "badman-core";
-import {UpdateResult} from "mongodb";
+import {Logger} from "log4js";
+import {
+    AggregateOptions, AggregationCursor,
+    Filter,
+    FindCursor,
+    FindOptions,
+    InsertOneOptions,
+    InsertOneResult,
+    OptionalUnlessRequiredId, UpdateFilter, UpdateOptions,
+    UpdateResult
+} from "mongodb";
 import MongoAccessor from "./MongoAccessor";
 import MongoCommand from "./MongoCommand";
 import MongoConnection from "./MongoConnection";
@@ -10,8 +20,11 @@ import ClientMongoFactory from "./ClientMongoFactory";
 
 export default class MongoTemplate extends MongoAccessor implements MongoCommand,Initializing,Disposable{
 
-    constructor(clientMongoFactory:ClientMongoFactory<MongoConnection>) {
+    private logger:Logger;
+
+    constructor(clientMongoFactory:ClientMongoFactory<MongoConnection>,logger:Logger) {
         super(clientMongoFactory);
+        this.logger=logger;
     }
 
     async afterInitialized () {
@@ -22,24 +35,36 @@ export default class MongoTemplate extends MongoAccessor implements MongoCommand
 
    }
 
-    async insert<T>(dbName:string,tableName:string,data:T):Promise<string> {
-        let connection:MongoConnection = await this.createConnection(dbName,tableName);
-        return await connection.insert(dbName,tableName,data);
+   async find<T> (dbName: string, collectionName: string, filter?: Filter<T>, options?: FindOptions): Promise<T[]> {
+       let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+       let findCursor:FindCursor<T> = connection.find<T>(filter,options);
+       return await findCursor.toArray();
+   }
+
+    async findOne<T>(dbName:string,collectionName:string,filter?: Filter<T>, options?: FindOptions): Promise<T>{
+        let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+        return await connection.findOne<T>(filter,options);
     }
 
-    async update<T>(dbName:string,tableName:string,primaryKey:{},data:T):Promise<UpdateResult> {
-        let connection:MongoConnection = await this.createConnection(dbName,tableName);
-        return await connection.update(dbName,tableName,primaryKey,data);
+    async insert<T>(dbName:string,collectionName:string,doc: OptionalUnlessRequiredId<T>, options?: InsertOneOptions):Promise<string>{
+        let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+        let insertOneResult:InsertOneResult<T> = await connection.insert(doc,options);
+        if(insertOneResult.acknowledged){
+            this.logger.info(' dbName = %s, collectionName=%s,  acknowledged = %s',dbName,collectionName,insertOneResult.acknowledged);
+            this.logger.info(' insertData = %s ',JSON.stringify(doc));
+        }
+        return insertOneResult.insertedId.toHexString();
     }
 
-    async find<T>(dbName:string,tableName:string,primaryKey:{}) {
-        let connection:MongoConnection = await this.createConnection(dbName,tableName);
-        return await connection.find<T>(dbName,tableName,primaryKey);
+    async update<T>(dbName:string,collectionName:string,filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions):Promise<UpdateResult<T>>{
+        let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+        let updateResult:UpdateResult<T> = await connection.update<T>(filter, update, options);
+        return updateResult;
     }
 
-    async list() {
-        // let connection:MongoConnection = await this.createConnection();
-        // connection.list();
+    async aggregate<T>(dbName:string,collectionName:string,pipeline?: T[], options?: AggregateOptions): Promise<T[]>{
+        let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+        let aggregationCursor:AggregationCursor<T> = await connection.aggregate<T>(pipeline,options);
+        return aggregationCursor.toArray();
     }
-
 }

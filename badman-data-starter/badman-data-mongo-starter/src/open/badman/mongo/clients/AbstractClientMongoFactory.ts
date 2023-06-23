@@ -15,4 +15,8 @@ export default abstract class AbstractClientMongoFactory{
         this.multiMongoProperties = multiMongoProperties;
 
     }
+
+    getLogger():Logger{
+        return this.logger;
+    }
 }

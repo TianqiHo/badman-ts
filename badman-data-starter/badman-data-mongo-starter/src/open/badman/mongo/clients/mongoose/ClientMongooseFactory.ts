@@ -10,7 +10,7 @@ import M, {Connection, ConnectOptions, Mongoose} from "mongoose";
 import AbstractClientMongoFactory from "../AbstractClientMongoFactory";
 
 
-export default class ClientMongooseFactory extends AbstractClientMongoFactory implements ClientMongoFactory<ClientMongooseConnection>,Initializing,Disposable {
+export default class ClientMongooseFactory extends AbstractClientMongoFactory implements ClientMongoFactory<any>,Initializing,Disposable {
 
 
     private dbs:Map<string,Connection>;

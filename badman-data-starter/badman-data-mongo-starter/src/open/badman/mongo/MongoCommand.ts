@@ -1,17 +1,28 @@
 
 
-import {UpdateResult} from "mongodb";
+import {
+	AggregateOptions,
+	Filter,
+	FindOptions,
+	InsertOneOptions,
+	OptionalUnlessRequiredId,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult
+} from "mongodb";
 
 
 export default interface MongoCommand{
 
+	find<T>(dbName:string,collectionName:string,filter?: Filter<T>, options?: FindOptions): Promise<T[]>;
 
-    insert<T>(dbName:string,collectionName:string,data:T):Promise<string>;
+	findOne<T>(dbName:string,collectionName:string,filter?: Filter<T>, options?: FindOptions): Promise<T>;
 
-    update<T>(dbName:string,collectionName:string,primaryKey:{},data:T):Promise<UpdateResult>;
+    insert<T>(dbName:string,collectionName:string,doc: OptionalUnlessRequiredId<T>, options?: InsertOneOptions):Promise<string>;
 
-    find<T>(dbName:string,collectionName:string,primaryKey:{}):Promise<T>;
+    update<T>(dbName:string,collectionName:string,filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions):Promise<UpdateResult<T>>;
 
-    list();
+	aggregate<T>(dbName:string,collectionName:string,pipeline?: T[], options?: AggregateOptions): Promise<T[]>;
+    // bulkWrite(operations:any[],setting:any);
 
 }
