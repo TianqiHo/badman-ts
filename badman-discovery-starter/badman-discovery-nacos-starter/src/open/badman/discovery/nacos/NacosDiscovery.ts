@@ -1,6 +1,11 @@
 
 
-import {Initializing, NetParser, RoundRobinLoadBalancer, WeightValue} from "badman-core";
+import {
+	Initializing,
+	NetParser,
+	RoundRobinLoadBalancer,
+	WeightValue
+} from "badman-core";
 import {Hosts, NacosNamingClient} from "nacos-naming";
 import NacosInstanceProperties from "./NacosInstanceProperties";
 import NacosServerProperties from "./NacosServerProperties";
@@ -35,13 +40,17 @@ export default class NacosDiscovery implements Initializing{
 		this.loadBalanceMapping = new Map<string, RoundRobinLoadBalancer<Host>>();
 
 		if(this.serverProperties && this.serverProperties.serverList && this.serverProperties.namespace){
+			//this.serverProperties.logger = SingletonObjectFactory2.Instance<Logging>(Logging.name).logger();
 			this.client = new NacosNamingClient(this.serverProperties);
 		}else{
 			let logger = console;
 			let address:string = this.localServerAddr;
 			let namespace:string = this.defaultNamespace;
-			let defaultServerProperties:NacosServerProperties = {logger: logger,serverList:address,namespace:namespace};
-			this.client = new NacosNamingClient(defaultServerProperties);
+			//let defaultServerProperties:Partial<NacosServerProperties> = {logger: logger,serverList:address,namespace:namespace};
+			serverProperties.logger = logger;
+			serverProperties.serverList = address;
+			serverProperties.namespace = namespace;
+			this.client = new NacosNamingClient(serverProperties);
 		}
 	}
 
@@ -51,8 +60,8 @@ export default class NacosDiscovery implements Initializing{
 
 			let ipv4:string | undefined = this.serverProperties.thisServerIp;
 			if(!ipv4){
-				//ipv4 = new NetParser().parseIPV4Address();
-				ipv4 = '0.0.0.0';
+				ipv4 = new NetParser().parseIPV4Address();
+				//ipv4 = '0.0.0.0';
 			}
 
 			let port:number | undefined = this.serverProperties.thisServerPort;
