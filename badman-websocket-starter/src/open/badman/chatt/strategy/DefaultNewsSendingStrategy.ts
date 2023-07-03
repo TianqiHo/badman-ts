@@ -1,6 +1,7 @@
 
 
 import {Logger} from "log4js";
+import ReadStatus from "../entity/ReadStatus";
 import SentStatus from "../entity/SentStatus";
 import TalkAbout from "../entity/TalkAbout";
 import {Socket} from "socket.io/dist/socket";
@@ -60,6 +61,10 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<T
 		}
 
 		connection.to(news.getSender()).emit('sent',sentStatus);
+	}
+
+	afterRead (messageStatuses: ReadStatus[]) {
+
 	}
 
 }

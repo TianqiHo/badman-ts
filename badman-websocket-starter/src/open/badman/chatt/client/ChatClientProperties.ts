@@ -3,11 +3,6 @@
 export default interface ChatClientProperties {
 
 	/**
-	 * 客户端唯一名称
-	 */
-	clientName:string;
-
-	/**
 	 * Should we force a new Manager for this connection?
 	 * @default false
 	 */

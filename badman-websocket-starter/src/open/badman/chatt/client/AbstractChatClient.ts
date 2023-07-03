@@ -1,6 +1,5 @@
 
 import {SyncInitializing} from "badman-core";
-import {Logger} from "log4js";
 import {io, Socket} from "socket.io-client";
 import ReadStatus from "../entity/ReadStatus";
 import SentStatus from "../entity/SentStatus";
@@ -47,7 +46,7 @@ import ChatClientProperties from "./ChatClientProperties";
 export default abstract class AbstractChatClient<TalkingType> implements SyncInitializing{
 
 
-	protected readonly logger:Logger;
+	protected readonly logger:any;
 
 	/**
 	 *  important! for receiving or sending personal message
@@ -77,8 +76,10 @@ export default abstract class AbstractChatClient<TalkingType> implements SyncIni
 	//
 	// 	this.logger.error(`${this.clientName}·断开连接成功 state = ${this.client.connected}\r\n`);
 	// });
-	protected constructor (clientName:string,server:string,logger:Logger,customProperties?:Partial<ChatClientProperties>) {
-		this.logger = logger;
+	protected constructor (clientName:string,server:string,logger?:any,customProperties?:Partial<ChatClientProperties>) {
+		if(logger){
+			this.logger = logger;
+		}
 		if(!clientName){
 			throw new EmptyPropertiesError('clientName can not be null');
 		}

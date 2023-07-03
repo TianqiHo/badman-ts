@@ -9,7 +9,6 @@ import TalkAbout, {Copy} from "../entity/TalkAbout";
 import DefaultNewsSendingStrategy from "../strategy/DefaultNewsSendingStrategy";
 import NewsSendingStrategy from "../strategy/NewsSendingStrategy";
 import ChatServerProperties from "./ChatServerProperties";
-
 import Http from "http";
 import type { Server as HTTPSServer } from "https";
 import type { Http2SecureServer } from "http2";
@@ -100,6 +99,7 @@ export default class ChatServer implements Initializing{
 						msg:`${this.properties.welcomeMessage?this.properties.welcomeMessage:this.defaultWelcomeMessage}(${customClientId})`,
 						id:connection.id}
 				);
+
 				// 监听客户端talk事件并匹配接受者（个人、群体）
 				connection.on('talkTo', async (talkAbout) => {
 					let news:TalkAbout = Copy(talkAbout);
@@ -136,8 +136,11 @@ export default class ChatServer implements Initializing{
 						let readStatus:ReadStatus = messageStatuses[i];
 						connection.to(readStatus.sender).emit('read',messageStatuses);
 					}
+					let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
+					strategy.afterRead(messageStatuses);
 
 				});
+
 			}else{
 				this.logger.error('Repeat Longin');
 				connection.emit('reLogin',clientParam);
