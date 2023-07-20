@@ -31,16 +31,31 @@ Code:
 
         await SingletonObjectFactory2.init(LocalConfigurer);
 
-        let logging:Logging =  await SingletonObjectFactory2.initWithArgs(Logging,['nacos_configuration_log4js_properties.json']);
-        let logger:Logger = logging.logger(BadmanNacosConfigurer.name);
+		let logging:Logging =  await SingletonObjectFactory2.initWithArgs(Logging,['nacos_configuration_log4js_properties.json']);
+		let logger:Logger = logging.logger(TestLocal.name);
 
-        let nacosProperties:NacosProperties = {
-            serverAddr: LocalConfigurer.getEnvironmentValue('NACOS_ADDRESS'),
-            namespace: LocalConfigurer.getEnvironmentValue('NACOS_NAMESPACE'),
-            username : LocalConfigurer.getEnvironmentValue('NACOS_USERNAME'),
-            password : LocalConfigurer.getEnvironmentValue('NACOS_PASSWORD'),
-        };
-        let nacosConfigurer:NacosConfigurer = await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
+		 let nacosProperties:NacosProperties = {
+		 	serverAddr: LocalConfigurer.getEnvironmentValue('NACOS_ADDRESS'),
+		 	namespace: LocalConfigurer.getEnvironmentValue('NACOS_NAMESPACE'),
+		 	username : LocalConfigurer.getEnvironmentValue('NACOS_USERNAME'),
+		 	password : LocalConfigurer.getEnvironmentValue('NACOS_PASSWORD'),
+		 };
 
-        let a:A = nacosConfigurer.get<A>('baidu.map')
+		 nacosProperties.subscribed=true;
+		 nacosProperties.subscribeScript=
+		 	'const refresh = (newContent) => {\n' +
+		 	'  console.log(\'receive : \',newContent);\n' +
+		 	'  if(newContent){process.exit(9000);}\n' +
+		 	'}\n' +
+			'return {refresh};'
+
+		let nacosConfigurer:NacosConfigurer = await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
+		 let a:A = nacosConfigurer.get<A>('baidu.map')
+		 logger.info(a);
+
+		//nacosConfigurer.subscribe((c)=>{
+			//console.info('---------',c);
+		//});
     }
+
+

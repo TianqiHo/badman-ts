@@ -10,7 +10,7 @@ export default class LocalConfigurer implements Initializing{
 
 
    async afterInitialized() {
-        dotenv.config();
+        dotenv.config({override:true});
     }
 
     public static getEnvironmentValue(key:string):string{

@@ -1,6 +1,6 @@
 {
   "name": "badman-configuration-nacos-starter",
-  "version": "0.1.1",
+  "version": "0.0.10",
   "license": "MIT",
   "private": false,
   "typings": "dist/BadmanNacosConfigurer.d.ts",
@@ -13,6 +13,7 @@
     "windowsrebuild": "rd/s/q dist && tsc",
     "windowsbuild": "tsc",
     "start": "tsc && node ./dist/BadmanNacosConfigurer",
+    "testLocal": "tsc && node ./dist/examples/TestLocal",
     "windowsclean": "rd/s/q dist"
   },
   "files": [
@@ -24,7 +25,8 @@
     "OOP",
     "Nacos",
     "LocalConfigurationClient",
-    "NacosConfigurationClient"
+    "NacosConfigurationClient",
+    "refresh"
   ],
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -33,6 +35,7 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "log4js": "^6.9.1",
-    "badman-core": "^0.1.4"
+    "badman-core": "latest",
+    "@types/dotenv": "^8.2.0"
   }
 }
