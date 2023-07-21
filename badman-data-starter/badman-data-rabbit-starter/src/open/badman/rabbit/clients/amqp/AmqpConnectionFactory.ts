@@ -22,7 +22,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 
 	private rabbitProperties:RabbitProperties;
 
-	private c:any;
+	//private c:any;
 
 	private domain:Domain;
 
@@ -31,37 +31,44 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 		this.logger = logger;
 		this.rabbitProperties = rabbitProperties;
 		this.closed = true;
-		this.c = require('amqplib/lib/connection');
-		this.domain = new Domain();
-		this.domain.on('error',async (err) => {
-			this.logger.error('AmqpConnectionFactory Domain err->',err);
-			await this.connecting();
-		});
+		//this.c = require('amqplib/lib/connection');
+		// this.domain = new Domain();
+		// this.domain.on('error',async (err) => {
+		// 	this.logger.error('Domain err->',err);
+		// 	if(this.connection){
+		// 		this.logger.info('connection Instance set null');
+		// 		this.connection = null;
+		// 	}
+		// 	await this.connecting();
+		// });
 	}
 
 	async afterInitialized () {
 
-		await this.domain.run(async () => {
-			//process.nextTick(async () => {
+		// await this.domain.run(async () => {
+		// 	process.nextTick(async () => {
 				await this.connecting();
-			//});
-		});
+				await this.closeGracefully();
+		// 	});
+		// });
 	}
 
 	private async connecting(){
-		this.connection = await connect(this.rabbitProperties.rabbit,this.rabbitProperties.socket);
-		this.closed = false;
-		this.connection.on('error', e =>{
-			this.logger.error('connection error-> isFatalError = ' + this.c.isFatalError(e),e);
-		});
-		this.connection.on('close', e=>{
-			this.closed = true;
-			this.logger.error('connection close->',e);
-			if(this.connection){
-				this.logger.error('connection Instance set null');
-				this.connection = null;
-			}
-		});
+		if(this.closed){
+			this.connection = await connect(this.rabbitProperties.rabbit,this.rabbitProperties.socket);
+			this.closed = false;
+			this.connection.on('error', (err) =>{
+				//let important:boolean = this.c.isFatalError(err);
+				this.logger.error(`connection error -> ` ,err);
+			});
+			this.connection.on('close', e => {
+				this.closed = true;
+				this.logger.warn('connection close->',e);
+			});
+		}else{
+			this.logger.warn('Amqp connection is already in use');
+
+		}
 	}
 
 	async createConnection (): Promise<RabbitConnection> {
@@ -86,4 +93,16 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 		await this.afterInitialized();
 	}
 
+	async close(){
+		await this.connection.close();
+	}
+
+	closeGracefully() {
+		process.on('SIGINT',async (sig)=>{
+			if(sig === 'SIGINT' && !this.closed){
+				await this.close();
+				this.logger.info('The Amqp exit gracefully');
+			}
+		});
+	}
 }

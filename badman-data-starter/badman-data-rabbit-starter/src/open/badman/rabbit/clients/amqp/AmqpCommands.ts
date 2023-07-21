@@ -20,6 +20,17 @@ export default class AmqpCommands implements RabbitCommands{
 
 	async execute(channelCallback:ChannelCallback,confirm?:boolean){
 		let channel:Channel = await this.amqpConnection.getChannel(confirm);
+		channel.on('error',(err)=>{
+			this.logger.error('channel error -> ',err);
+			//From official: To recover from a channel error your code must listen for the channel error event,
+			// create a new channel and restablish any consumers.
+			channel.recover();
+		});
+
+		channel.on('close',(err)=>{
+			this.logger.info('channel close -> ',err);
+			//todo
+		});
 		channelCallback.doInChannel(channel);
 	}
 
@@ -40,6 +51,21 @@ export default class AmqpCommands implements RabbitCommands{
 				channel.publish(exchange,routingKey,Buffer.from(data),options);
 			}
 		});
+
+	}
+
+	sendObjectToExchange (exchange: string, routingKey: string, data: object, options?: Object) {
+	}
+
+	sendObjectToQueue (queueName: string, data: object, options?: Object) {
+
+	}
+
+	confirmSendObjectToQueue (queueName: string, data: object, options?: Object) {
+
+	}
+
+	confirmSendObjectToExchange (exchange: string, routingKey: string, data: object, options?: Object) {
 
 	}
 

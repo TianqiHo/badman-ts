@@ -39,6 +39,11 @@ export default class RabbitTemplate extends RabbitAccessor implements RabbitComm
 		connection.getCommands().sendStringToExchange(exchange, routingKey, data, options);
 	}
 
+	async sendObjectToExchange (exchange: string, routingKey: string, data: object, options?: Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getCommands().sendStringToExchange(exchange, routingKey, JSON.stringify(data), options);
+	}
+
 	async sendBufferToQueue (queueName: string, data: Buffer, options?: Object) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
 		connection.getCommands().sendBufferToQueue(queueName, data, options);
@@ -47,6 +52,11 @@ export default class RabbitTemplate extends RabbitAccessor implements RabbitComm
 	async sendStringToQueue (queueName: string, data: string, options?: Object) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
 		connection.getCommands().sendStringToQueue(queueName, data, options);
+	}
+
+	async sendObjectToQueue (queueName: string, data: object, options?: Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getCommands().sendStringToQueue(queueName, JSON.stringify(data), options);
 	}
 
 	async confirmSendBufferToExchange (exchange: string, routingKey: string, data: Buffer, options?: Object) {
@@ -64,9 +74,19 @@ export default class RabbitTemplate extends RabbitAccessor implements RabbitComm
 		connection.getCommands().confirmSendStringToExchange(exchange, routingKey, data, options);
 	}
 
+	async confirmSendObjectToExchange (exchange: string, routingKey: string, data: object, options?: Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getCommands().confirmSendStringToExchange(exchange, routingKey, JSON.stringify(data), options);
+	}
+
 	async confirmSendStringToQueue (queueName: string, data: string, options?: Object) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
 		connection.getCommands().confirmSendStringToQueue(queueName, data, options);
+	}
+
+	async confirmSendObjectToQueue (queueName: string, data: object, options?: Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getCommands().confirmSendStringToQueue(queueName, JSON.stringify(data), options);
 	}
 
 }

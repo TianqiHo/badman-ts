@@ -1,6 +1,6 @@
 {
   "name": "badman-data-rabbit-starter",
-  "version": "0.10.1",
+  "version": "0.0.11",
   "license": "MIT",
   "author": "BadMan",
   "description": "OOP Rabbit",
@@ -12,6 +12,7 @@
   },
   "files": [
     "dist/",
+    "example/",
     "LICENSE",
     "readme.MD"
   ],
@@ -20,7 +21,9 @@
     "windowsrebuild": "rd/s/q dist && tsc",
     "windowsbuild": "tsc",
     "start": "tsc && node ./dist/BadmanRabbit",
-    "windowsclean": "rd/s/q dist"
+    "windowsclean": "rd/s/q dist",
+    "exampleStart": "tsc && node ./dist/examples/TestRabbit",
+    "PCStart": "tsc && node ./dist/examples/ProduceAndConsume"
   },
   "keywords": [
     "OOP",

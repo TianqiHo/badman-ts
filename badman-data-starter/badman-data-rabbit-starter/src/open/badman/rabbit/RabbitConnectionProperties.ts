@@ -52,5 +52,6 @@ export default interface RabbitConnectionProperties{
 	 * Default value: '/'
 	 */
 	vhost?: string | undefined;
+	channelMax?:number;
 
 }

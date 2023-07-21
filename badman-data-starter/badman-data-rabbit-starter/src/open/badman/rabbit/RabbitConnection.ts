@@ -11,10 +11,10 @@ export default interface RabbitConnection {
 
 	getAdminCommands():RabbitAdminCommands;
 
-	open():boolean;
-
-	close():boolean;
-
-	isClosed():boolean;
+	// open():boolean;
+	//
+	// close():Promise<boolean>;
+	//
+	// isClosed():boolean;
 
 }

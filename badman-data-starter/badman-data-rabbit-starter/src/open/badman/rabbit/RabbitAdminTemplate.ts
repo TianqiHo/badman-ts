@@ -34,14 +34,26 @@ export default class RabbitAdminTemplate extends RabbitAccessor implements Rabbi
 
 	async declareAckConsumer<Channel,Message> (queue: string, consumer: RabbitConsumer<Channel,Message> ) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
-		connection.getAdminCommands().declareAckConsumer(queue, consumer);
+		connection.getAdminCommands().declareAckConsumer<Channel,Message>(queue, consumer);
 		this.logger.info(`DeclareAckConsumer [${consumer.constructor.name}] success`);
+	}
+
+	async declareAckConsumerWithRoutingKey<Channel, Message> (queue: string, routingKey: string, consumer: RabbitConsumer<Channel, Message>) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getAdminCommands().declareAckConsumerWithRoutingKey<Channel,Message>(queue, routingKey,consumer);
+		this.logger.info(`DeclareAckConsumerWithRoutingKey [${consumer.constructor.name}] success`);
 	}
 
 	async declareConsumer<Channel,Message>  (queue: string, consumer: RabbitConsumer<Channel,Message> , options?: Object) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
-		connection.getAdminCommands().declareConsumer(queue, consumer, options);
-		this.logger.info(`DeclareNormalConsumer [${consumer.constructor.name}] success`);
+		connection.getAdminCommands().declareConsumer<Channel,Message>(queue, consumer, options);
+		this.logger.info(`DeclareConsumer [${consumer.constructor.name}] success`);
+	}
+
+	async declareConsumerWithRoutingKey<Channel, Message> (queue: string, routingKey: string, consumer: RabbitConsumer<Channel, Message>, options?: Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getAdminCommands().declareConsumerWithRoutingKey<Channel,Message>(queue, routingKey, consumer, options);
+		this.logger.info(`DeclareConsumerWithRoutingKey [${consumer.constructor.name}] success`);
 	}
 
 	async declareExchange (exchange: string, type: "direct" | "topic" | "headers" | "fanout" | "match" | string, options?: Object): Promise<Object> {

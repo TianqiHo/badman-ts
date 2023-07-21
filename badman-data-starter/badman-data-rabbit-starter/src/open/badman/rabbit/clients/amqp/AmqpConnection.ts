@@ -17,6 +17,8 @@ export default class AmqpConnection implements RabbitConnection{
 
 	private connection: Connection;
 
+	//private closed:boolean=false;
+
 	constructor (connection: Connection,logger:Logger) {
 		this.connection = connection
 		this.logger = logger;
@@ -39,17 +41,20 @@ export default class AmqpConnection implements RabbitConnection{
 		}
 	 }
 
-	close (): boolean {
-		return false;
-	}
-
-	isClosed (): boolean {
-		return false;
-	}
-
-	open (): boolean {
-		return false;
-	}
+	// async close (): Promise<boolean> {
+	// 	await this.connection.close();
+	// 	this.closed=true;
+	// 	return this.closed;
+	// }
+	//
+	// isClosed (): boolean {
+	// 	return this.closed;
+	// }
+	//
+	// open (): boolean {
+	// 	throw new Error('Not Implement yet')
+	// 	return false;
+	// }
 
 
 }

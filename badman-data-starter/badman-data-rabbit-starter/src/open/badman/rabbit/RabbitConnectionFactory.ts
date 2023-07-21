@@ -11,5 +11,8 @@ export default interface RabbitConnectionFactory {
 
 	recovery();
 
+	close();
+
+	closeGracefully();
 
 }
