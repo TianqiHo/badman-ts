@@ -6,6 +6,7 @@ import {Domain} from "domain";
 import {Logger} from "log4js";
 import RabbitConnection from "../../RabbitConnection";
 import RabbitConnectionFactory from "../../RabbitConnectionFactory";
+import RabbitError from "../../RabbitError";
 import RabbitProperties from "../../RabbitProperties";
 import AmqpConnection from "./AmqpConnection";
 
@@ -79,7 +80,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 		}
 
 		if(!this.connection){
-			throw new Error('Rabbit connection has broken');
+			throw new RabbitError('Rabbit connection has broken');
 		}
 
 		return new AmqpConnection(this.connection,this.logger);

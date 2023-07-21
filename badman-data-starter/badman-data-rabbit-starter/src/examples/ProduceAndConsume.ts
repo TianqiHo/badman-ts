@@ -1,6 +1,7 @@
 
 import {Channel, ConsumeMessage} from "amqplib";
 import {Logging, SingletonObjectFactory2} from "badman-core";
+import * as console from "console";
 import {Logger} from "log4js";
 import AmqpConnectionFactory from "../open/badman/rabbit/clients/amqp/AmqpConnectionFactory";
 import RabbitAdminTemplate from "../open/badman/rabbit/RabbitAdminTemplate";
@@ -93,8 +94,10 @@ class ProduceAndConsume{
 
 		//绑定一个自动提交ack的消费者,手动提交使用this.rabbitAdminTemplate.declareConsumer();
 		//直接绑定队列
-		await this.rabbitAdminTemplate.declareAckConsumer<Channel,ConsumeMessage>('dict',new CommonDictConsumer('纯字典'));
+		//await this.rabbitAdminTemplate.declareAckConsumer<Channel,ConsumeMessage>('dict',new CommonDictConsumer('纯字典'));
 
+
+		await this.rabbitAdminTemplate.declareEntityAckConsumer<Channel,DictEntity>('dict',new DictConsumer('具体字典'));
 
 	}
 
@@ -106,13 +109,13 @@ class ProduceAndConsume{
 		//模拟生产消息
 		setInterval(()=>{
 			//直发到队列，此时只有dict才能收到消息
-			this.rabbitTemplate.sendObjectToQueue('dict',{dictId:111,dictName:'字典'});
+			//this.rabbitTemplate.sendObjectToQueue('dict',{dictId:111,dictName:'字典'});
 
 			//发到交换机，此时只有tenant收到消息
-			this.rabbitTemplate.sendObjectToExchange('my_exchange','user',{id:123,name:'这个人'});
+			//this.rabbitTemplate.sendObjectToExchange('my_exchange','user',{id:123,name:'这个人'});
 
 			//发到交换机，此时tenant dict都能收到消息
-			this.rabbitTemplate.sendObjectToExchange('my_exchange','dict',{dictId:222,dictName:'字典2'});
+			//this.rabbitTemplate.sendObjectToExchange('my_exchange','dict',{dictId:222,dictName:'字典2'});
 		},5000);
 	}
 }
@@ -153,7 +156,25 @@ class CommonDictConsumer implements RabbitConsumer<Channel, ConsumeMessage>{
 		console.log(`${this.name}--receive-----dictId----------`,user.dictId);
 		console.log(`${this.name}--receive-----dictName----------`,user.dictName);
 	}
+}
 
+class DictConsumer implements RabbitConsumer<Channel, DictEntity>{
+
+	private name:string;
+
+	constructor (name:string) {
+		this.name = name;
+	}
+	/**
+	 * 具体消费逻辑
+	 * @param channel
+	 * @param user
+	 */
+	async consume (channel:Channel, dict:DictEntity): Promise<void> {
+		console.log(`${this.name}--receive-----dictId----------`,dict.dictId);
+		console.log(`${this.name}--receive-----dictName----------`,dict.dictName);
+		throw new Error('XXXXXXXXXXXXXXXXXX');
+	}
 }
 
 
@@ -170,4 +191,7 @@ interface DictEntity{
 
 (()=>{
 	new ProduceAndConsume().main();
+	process.on('SIGINT',async (sig)=>{
+		console.info('The Server exit gracefully');
+	});
 })()

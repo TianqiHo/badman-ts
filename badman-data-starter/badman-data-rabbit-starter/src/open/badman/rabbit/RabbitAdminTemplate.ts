@@ -32,16 +32,22 @@ export default class RabbitAdminTemplate extends RabbitAccessor implements Rabbi
 		connection.getAdminCommands().bindQueue(queue, exchange, routingKey);
 	}
 
-	async declareAckConsumer<Channel,Message> (queue: string, consumer: RabbitConsumer<Channel,Message> ) {
+	async declareAckConsumer<Channel,Message> (queue: string, consumer: RabbitConsumer<Channel,Message>,options?:Object ) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
-		connection.getAdminCommands().declareAckConsumer<Channel,Message>(queue, consumer);
+		connection.getAdminCommands().declareAckConsumer<Channel,Message>(queue, consumer,options);
 		this.logger.info(`DeclareAckConsumer [${consumer.constructor.name}] success`);
 	}
 
-	async declareAckConsumerWithRoutingKey<Channel, Message> (queue: string, routingKey: string, consumer: RabbitConsumer<Channel, Message>) {
+	async declareAckConsumerWithRoutingKey<Channel, Message> (queue: string, routingKey: string, consumer: RabbitConsumer<Channel, Message>,options?:Object) {
 		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
-		connection.getAdminCommands().declareAckConsumerWithRoutingKey<Channel,Message>(queue, routingKey,consumer);
+		connection.getAdminCommands().declareAckConsumerWithRoutingKey<Channel,Message>(queue, routingKey,consumer,options);
 		this.logger.info(`DeclareAckConsumerWithRoutingKey [${consumer.constructor.name}] success`);
+	}
+
+	async declareEntityAckConsumer<Channel, Entity> (queue: string, consumer: RabbitConsumer<Channel, Entity>,options?:Object) {
+		let connection: RabbitConnection = await this.rabbitConnectionFactory.createConnection();
+		connection.getAdminCommands().declareEntityAckConsumer<Channel,Entity>(queue, consumer,options);
+		this.logger.info(`DeclareEntityAckConsumer [${consumer.constructor.name}] success`);
 	}
 
 	async declareConsumer<Channel,Message>  (queue: string, consumer: RabbitConsumer<Channel,Message> , options?: Object) {

@@ -2,7 +2,6 @@
 
 
 import {Channel, ConsumeMessage, Options, Replies} from "amqplib";
-import * as console from "console";
 import {Logger} from "log4js";
 import RabbitAdminCommands from "../../RabbitAdminCommands";
 import RabbitConsumer from "../../RabbitConsumer";
@@ -10,8 +9,6 @@ import AmqpConnection from "./AmqpConnection";
 
 
 export default class AmqpAdminCommands  implements RabbitAdminCommands{
-
-
 
 	private logger:Logger;
 
@@ -37,46 +34,80 @@ export default class AmqpAdminCommands  implements RabbitAdminCommands{
 		let channel:Channel = await this.amqpConnection.getChannel(false);
 
 		await channel.consume(queue,async (message:ConsumeMessage|null)=>{
-			//let data:M = JSON.parse(message.content.toString());
-			let bindRoutingKey:string = message.fields.routingKey;
-			if(bindRoutingKey === routingKey){
-				await consumer.consume(<C>channel,<M>message);
-			}else{
-				this.logger.warn(`Exchange[${message.fields.exchange}],${bindRoutingKey} != ${routingKey},Then recover`);
-				await channel.nack(message,false,true);
+			if(message){
+				try {
+					let bindRoutingKey: string = message.fields.routingKey;
+					if (bindRoutingKey === routingKey) {
+						await consumer.consume(<C>channel, <M>message);
+					} else {
+						await channel.nack(message, false, true);
+						this.logger.debug(`Exchange[${message.fields.exchange}], redelivered [${message.fields.redelivered}], ${bindRoutingKey} != ${routingKey},And then reject it`);
+					}
+				} catch (e) {
+					this.logger.error('Consume error -> ',e);
+				}
 			}
-
 		},options);
 	}
 
-	async declareAckConsumer<C,M>(queue:string,consumer:RabbitConsumer<C,M>){
+	async declareEntityAckConsumer<C, Entity> (queue: string, consumer: RabbitConsumer<C, Entity>,options?:Object) {
 		let channel:Channel = await this.amqpConnection.getChannel(false);
+		let option = Object.assign({},options||{},{noAck:false});
 		await channel.consume(queue,async (message:ConsumeMessage|null)=>{
-			//let data:M = JSON.parse(message.content.toString());
-			await consumer.consume(<C>channel,<M>message);
-			channel.ack(message);
-		},{noAck:false});
-	}
-
-	async declareAckConsumerWithRoutingKey<C, M> (queue: string, routingKey: string, consumer: RabbitConsumer<C, M>) {
-		let channel:Channel = <Channel>await this.amqpConnection.getChannel(false);
-
-		await channel.consume(queue,async (message:ConsumeMessage|null)=>{
-			//let data:M = JSON.parse(message.content.toString());
-			//consumer.consume(<C>channel,<M>message);
-
-			let bindRoutingKey:string = message.fields.routingKey;
-			if(bindRoutingKey === routingKey){
-				await consumer.consume(<C>channel,<M>message);
-				channel.ack(message);
-			}else{
-				// await channel.cancel(message.fields.consumerTag);
-				// this.logger.warn(`Exchange[${message.fields.exchange}],${bindRoutingKey} != ${routingKey},Then cancel it`);
-				await channel.nack(message,false,true);
-				this.logger.warn(`Exchange[${message.fields.exchange}], redelivered [${message.fields.redelivered}], ${bindRoutingKey} != ${routingKey},And then reject it`);
+			if(message){
+				try {
+					let data:Entity= JSON.parse(message.content.toString('utf-8',0));
+					await consumer.consume(<C>channel, data);
+				} catch (e) {
+					this.logger.error('EntityAckConsumer error -> ',e);
+				}finally {
+					channel.ack(message);
+				}
 			}
 
-		},{noAck:false});
+		},option);
+	}
+
+	async declareAckConsumer<C,M>(queue:string,consumer:RabbitConsumer<C,M>,options?:Object){
+		let channel:Channel = await this.amqpConnection.getChannel(false);
+		let option = Object.assign({},options||{},{noAck:false});
+		await channel.consume(queue,async (message:ConsumeMessage|null)=>{
+			if(message){
+				try { //let data:M = JSON.parse(message.content.toString());
+					await consumer.consume(<C>channel, <M>message);
+				} catch (e) {
+					this.logger.error('AckConsume error -> ',e);
+				}finally {
+					channel.ack(message);
+				}
+			}
+
+		},option);
+	}
+
+
+	async declareAckConsumerWithRoutingKey<C, M> (queue: string, routingKey: string, consumer: RabbitConsumer<C, M>,options?:Object) {
+		let channel:Channel = <Channel>await this.amqpConnection.getChannel(false);
+		let option = Object.assign({},options||{},{noAck:false});
+		await channel.consume(queue,async (message:ConsumeMessage|null)=>{
+			if(message){
+				let bindRoutingKey: string = message.fields.routingKey;
+				if (bindRoutingKey === routingKey) {
+					try {
+						await consumer.consume(<C>channel, <M>message);
+					} catch (e) {
+						this.logger.error('AckConsumerWithRoutingKey error ->',e);
+					}finally {
+						channel.ack(message);
+					}
+				} else {
+					await channel.nack(message, false, true);
+					this.logger.debug(`Exchange[${message.fields.exchange}], redelivered [${message.fields.redelivered}], ${bindRoutingKey} != ${routingKey},And then reject it`);
+				}
+
+			}
+
+		},option);
 	}
 
 	async declareExchange(exchange: string, type: 'direct' | 'topic' | 'headers' | 'fanout' | 'match' | string, options?: Options.AssertExchange):Promise<Replies.AssertExchange>{
