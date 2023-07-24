@@ -4,6 +4,7 @@
 import {Logging, SingletonObjectFactory2} from "badman-core";
 import Http from "http";
 import {Configuration, Logger} from "log4js";
+
 import ChatServer from "../../open/badman/chatt/server/ChatServer";
 import createExpress, {Express} from "express";
 import ChatServerProperties from "../../open/badman/chatt/server/ChatServerProperties";

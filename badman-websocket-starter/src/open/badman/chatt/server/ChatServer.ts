@@ -5,7 +5,7 @@ import {Server} from "socket.io";
 import {RemoteSocket} from "socket.io/dist/broadcast-operator";
 import {Socket} from "socket.io/dist/socket";
 import ReadStatus from "../entity/ReadStatus";
-import TalkAbout, {Copy} from "../entity/TalkAbout";
+import TalkAbout from "../entity/TalkAbout";
 import DefaultNewsSendingStrategy from "../strategy/DefaultNewsSendingStrategy";
 import NewsSendingStrategy from "../strategy/NewsSendingStrategy";
 import ChatServerProperties from "./ChatServerProperties";
@@ -41,16 +41,16 @@ import type { Http2SecureServer } from "http2";
 //
 
 //中转站 transfer station
-export default class ChatServer implements Initializing{
+export default class ChatServer<News extends TalkAbout = TalkAbout> implements Initializing{
 
 	private readonly logger:Logger
 	private readonly server:Server;
 	private readonly defaultWelcomeMessage:string = '·欢迎光临红浪漫,宾上客一位·';
 	private properties:Partial<ChatServerProperties>;
 
-	private newsSendingStrategy:NewsSendingStrategy<any>;
+	private newsSendingStrategy:NewsSendingStrategy<News>;
 
-	private readonly defaultNewsSendingStrategy:NewsSendingStrategy<any>;
+	private readonly defaultNewsSendingStrategy:DefaultNewsSendingStrategy;
 
 	constructor (properties:Partial<ChatServerProperties>,logger:Logger,heart?:Http.Server | HTTPSServer | Http2SecureServer) {
 		this.logger = logger;
@@ -101,12 +101,11 @@ export default class ChatServer implements Initializing{
 				);
 
 				// 监听客户端talk事件并匹配接受者（个人、群体）
-				connection.on('talkTo', async (talkAbout) => {
-					let news:TalkAbout = Copy(talkAbout);
-					let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
-					let preSendingResult = await strategy.preSending(news);
-					await strategy.postSending(connection,news,preSendingResult);
-					strategy.afterSending(connection,news);
+				connection.on('talkTo', async (talkAbout:News) => {
+					let strategy:NewsSendingStrategy<News> = <NewsSendingStrategy<News>>(this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy);
+					await strategy.preSending(connection,talkAbout);
+					await strategy.postSending(connection,talkAbout);
+					await strategy.afterSending(connection,talkAbout);
 				});
 
 				//加入群聊

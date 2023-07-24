@@ -3,7 +3,7 @@ import {SingletonObjectFactory2} from "badman-core";
 import {Request, Response, Router} from "express";
 import {Logger} from "log4js";
 import ChatClientProperties from "../../open/badman/chatt/client/ChatClientProperties";
-import TalkAbout, {Copy} from "../../open/badman/chatt/entity/TalkAbout";
+import MT from "../../open/badman/chatt/entity/MT";
 import ChatServer from "../../open/badman/chatt/server/ChatServer";
 import MyClient from "./MyClient";
 
@@ -30,12 +30,15 @@ export default class ChatRouter {
 			let clientName:string = req.params.n;
 			let properties:Partial<ChatClientProperties> = {
 				addTrailingSlash: true,
-				autoUnref: true,
+				//autoUnref: true,
 				path: "/chatServer",
 				reconnectionAttempts: 10,
 				transports: ["polling"],
 				upgrade: false,
-				protocols: ['http', 'https']
+				protocols: ['http', 'https'],
+				extraHeaders: {
+					aaa: 'aaaa'
+				}
 			}
 
 			let c:MyClient = new MyClient(clientName,'http://localhost:8888',this.logger,properties);
@@ -99,15 +102,25 @@ export default class ChatRouter {
 
 			let client:MyClient = this.all.get(from);
 
-			let talkAbout:TalkAbout = Copy(req.body); //new TalkAbout(null,null,null);
-			talkAbout.setNewsId((+Date.now()).toString());
-			talkAbout.setRoomId(to);
-			talkAbout.setSender(from);
-			talkAbout.setSenderName(from);
-			talkAbout.setState(false);
+			// let talkAbout:TalkAbout = Copy(req.body); //new TalkAbout(null,null,null);
+			// talkAbout.setNewsId((+Date.now()).toString());
+			// talkAbout.setRoomId(to);
+			// talkAbout.setSender(from);
+			// talkAbout.setSenderName(from);
+			// talkAbout.setState(false);
 			//talkAbout.setContent(req.body.content);
 
-			client.talkTo(talkAbout);
+			let mt:Partial<MT> = {
+				newsId: (+Date.now()).toString(),
+				roomId: to,
+				sender: from,
+				senderName: from,
+				sendState: false,
+				content: req.body.content,
+				unReaders: ['123']
+			}
+
+			client.talkTo(mt);
 
 			res.json({"talked":true});
 
@@ -118,14 +131,24 @@ export default class ChatRouter {
 			let from:string = req.params.from;
 			let to:string = req.params.to;
 			let client:MyClient = this.all.get(from);
-			let talkAbout:TalkAbout = Copy(req.body); //new TalkAbout(null,null,null);
-			talkAbout.setNewsId((+Date.now()).toString());
-			talkAbout.setReceiver(to);
-			talkAbout.setSender(from);
-			talkAbout.setSenderName(from);
-			talkAbout.setState(false);
+			// let talkAbout:MT =  new MT(null,null,null); //<MT>Copy(req.body); //new TalkAbout(null,null,null);
+			// talkAbout.setNewsId((+Date.now()).toString());
+			// talkAbout.setReceiver(to);
+			// talkAbout.setSender(from);
+			// talkAbout.setSenderName(from);
+			// talkAbout.setState(false);
+			// talkAbout.setUnReaders(['32112321','sdwdw']);
 			//talkAbout.setContent(req.body.content);
-			client.talkTo(talkAbout);
+			let mt:Partial<MT> = {
+				newsId: (+Date.now()).toString(),
+				receiver: to,
+				sender: from,
+				senderName: from,
+				sendState: false,
+				content: req.body.content,
+				unReaders: ['123']
+			}
+			client.talkTo(mt);
 			res.json({"talked":true});
 		});
 

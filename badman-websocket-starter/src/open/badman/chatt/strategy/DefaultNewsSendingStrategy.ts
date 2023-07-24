@@ -1,14 +1,15 @@
 
 
 import {Logger} from "log4js";
+import MT from "../entity/MT";
 import ReadStatus from "../entity/ReadStatus";
 import SentStatus from "../entity/SentStatus";
-import TalkAbout from "../entity/TalkAbout";
 import {Socket} from "socket.io/dist/socket";
+import EmptyPropertiesError from "../error/EmptyPropertiesError";
 import NewsSendingStrategy from "./NewsSendingStrategy";
 
 
-export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<TalkAbout>{
+export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<MT>{
 
 	private logger:Logger;
 
@@ -16,41 +17,47 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<T
 		this.logger = logger;
 	}
 
-	async preSending (news: TalkAbout): Promise<TalkAbout> {
+	async preSending (connection:Socket,news: MT): Promise<void> {
+		//throw new EmptyPropertiesError('322322323');
+		//connection.emit('');
+		//Object.setPrototypeOf(news,MT.prototype);
+		//this.logger.error(connection.handshake.headers.aaa);
 
 		//news.sendState = true;
 
 		//let ats:string[] = news.getAtReceivers();
 
-		return news;
+		//return;
 	}
 
 
 
-	postSending (connection: Socket, news: TalkAbout, preSendingResult: TalkAbout): Promise<void> {
+	postSending (connection: Socket, news: MT): Promise<void> {
+
+
 		let who:string = null;
 
-		if(news.getRoomId()){
-			who = news.getRoomId();
+		if(news.roomId){
+			who = news.roomId;
 		}
 
-		if(!who && news.getReceiver()){
-			who = news.getReceiver();
+		if(!who && news.receiver){
+			who = news.receiver;
 		}
 
 		if(who && who.length>0){
-			connection.to(who).emit('receiveFrom',preSendingResult);
+			connection.to(who).emit('receiveFrom',news);
 		}else{
-			this.logger.error(`当前[${news.getSender()}-${news.getContent()}]的消息发送失败,未指定接受者`,'\r\n');
+			this.logger.error(`当前[${news.sender}-${news.content}]的消息发送失败,未指定接受者`,'\r\n');
 		}
 
 		return;
 	}
 
 
-	afterSending (connection: Socket,news: TalkAbout) {
+	afterSending (connection: Socket,news: MT) {
 
-		news.setState(true);
+		news.sendState = true;
 
 		let sentStatus:Partial<SentStatus> = {
 			roomId: news.roomId,
@@ -60,11 +67,12 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<T
 			serverSendTime: new Date()
 		}
 
-		connection.to(news.getSender()).emit('sent',sentStatus);
+		connection.to(news.sender).emit('sent',sentStatus);
 	}
 
-	afterRead (messageStatuses: ReadStatus[]) {
+	async afterRead (messageStatuses: ReadStatus[]) {
 
+		return;
 	}
 
 }

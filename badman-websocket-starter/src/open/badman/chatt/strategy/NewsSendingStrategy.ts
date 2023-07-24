@@ -2,18 +2,19 @@
 
 import {Socket} from "socket.io/dist/socket";
 import ReadStatus from "../entity/ReadStatus";
-import TalkAbout from "../entity/TalkAbout";
 
 
 export default interface NewsSendingStrategy<News>{
 
 
-	preSending(news:TalkAbout):Promise<News>;
+	//preSending(news:TalkAbout):Promise<News>;
 
-	postSending(connection:Socket,news: TalkAbout,preSendingResult:News):Promise<void>;
+	preSending(connection:Socket,news:News):Promise<void>;
 
-	afterSending(connection: Socket,news: TalkAbout);
+	postSending(connection:Socket,news: News):Promise<void>;
 
-	afterRead(messageStatuses:ReadStatus[]);
+	afterSending(connection: Socket,news: News);
+
+	afterRead(messageStatuses:ReadStatus[]):Promise<void>;
 
 }

@@ -1,7 +1,7 @@
 {
 
   "name": "badman-websocket-starter",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "oop chat websocket udp ",
   "private": false,
   "author": "BadMan",
@@ -18,7 +18,8 @@
     "w-build": "tsc",
     "w-start": "tsc && node --inspect ./dist/BadmanWebSocket",
     "start": "tsc && node ./dist/BadmanWebSocket",
-    "windowsclean": "rd/s/q dist"
+    "windowsclean": "rd/s/q dist",
+    "websocket_puppet_start": "tsc && node ./dist/examples/websocket_puppet/TestServer"
   },
   "files": [
     "dist/",
@@ -31,7 +32,8 @@
     "OOP",
     "Chat",
     "WS",
-    "WebsocketServer",
+    "Websocket",
+    "WebsocketPuppet tool kit by long polling",
     "Udp"
   ],
   "dependencies": {

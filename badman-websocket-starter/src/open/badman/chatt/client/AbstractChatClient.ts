@@ -43,7 +43,7 @@ import ChatClientProperties from "./ChatClientProperties";
 /**
  * 每个用户只有 1个 客户端, 内部包含着所有的 群、好友.
  */
-export default abstract class AbstractChatClient<TalkingType> implements SyncInitializing{
+export default abstract class AbstractChatClient<TalkingType extends TalkAbout = TalkAbout> implements SyncInitializing{
 
 
 	protected readonly logger:any;
@@ -64,8 +64,6 @@ export default abstract class AbstractChatClient<TalkingType> implements SyncIni
 	 * @protected
 	 */
 	private readonly roomIds:Map<string,string>;
-
-
 
 	// this.client.on('connect_error',async (err: Error)=>{
 	// 	let prefix = `${this.clientName}·连接失败 state = ${this.client.connected}\r\n`;
@@ -301,7 +299,7 @@ export default abstract class AbstractChatClient<TalkingType> implements SyncIni
 	 * talking to someone
 	 * @param talking
 	 */
-	talkTo(talking:Partial<TalkAbout>):boolean{
+	talkTo(talking:Partial<TalkingType>):boolean{
 
 		if(this.isOnline()){
 			if(!talking.sender &&
