@@ -48,8 +48,8 @@ export default class TestLocal {
 		// 	'return {refresh};'
 
 		let nacosConfigurer:NacosConfigurer = await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
-		// let a:A = nacosConfigurer.get<A>('baidu.map')
-		// logger.info(a);
+		 let a:A = nacosConfigurer.get<A>('baidu.map')
+		 logger.info(a);
 
 		nacosConfigurer.subscribe((c)=>{
 			console.info('---------',c);

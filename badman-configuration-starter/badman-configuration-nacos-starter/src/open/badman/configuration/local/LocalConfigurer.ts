@@ -1,16 +1,26 @@
 
 import {Initializing} from "badman-core";
 import dotenv from 'dotenv';
+import LocalConfigurationProperties from "./LocalConfigurationProperties";
 
 
 export default class LocalConfigurer implements Initializing{
 
 
-    constructor () {}
+    private readonly properties:LocalConfigurationProperties;
+
+    constructor (properties?:LocalConfigurationProperties) {
+        this.properties = properties;
+    }
 
 
    async afterInitialized() {
-        dotenv.config({override:true});
+        if(this.properties){
+            dotenv.config(this.properties);
+        }else{
+            dotenv.config();
+        }
+
     }
 
     public static getEnvironmentValue(key:string):string{

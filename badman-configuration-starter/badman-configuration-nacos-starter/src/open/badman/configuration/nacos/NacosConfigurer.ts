@@ -68,9 +68,9 @@ export default class NacosConfigurer implements Initializing{
         this.nacos = new NacosConfigClient(options);
     }
 
-    get<T>(key:string):T {
+    get<T>(key:string):T|undefined {
         let ketElements:string[] = key.split('.');
-        let everyLayer:any = null;
+        let everyLayer:any;
         for (let i = 0; i < ketElements.length; i++) {
             if(everyLayer){
                 everyLayer = everyLayer[ketElements[i]];

@@ -1,6 +1,6 @@
 {
   "name": "badman-configuration-nacos-starter",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "license": "MIT",
   "private": false,
   "typings": "dist/BadmanNacosConfigurer.d.ts",
