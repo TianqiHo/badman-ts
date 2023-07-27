@@ -18,7 +18,7 @@ export default interface BeanObject<T> {
 	// import bean instance ,not implement yet
 	// injections?:string[];
 
-	bean?:unknown;
+	bean?:T;
 
 	lazyInit?:boolean;
 

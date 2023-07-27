@@ -1,14 +1,17 @@
 
 
 import { Logger} from "log4js";
+import * as process from "process";
+import Disposable from "../Disposable";
 import Initializing from "../Initializing";
 import Logging from "../logging/Logging";
 import SyncInitializing from "../SyncInitializing";
 import BeanObject, {BeanType} from "./BeanObject";
 
 
-export default class Beans{
-	private static beanObjectMap:Map<string,BeanObject<any>> = new Map<string, BeanObject<any>>();
+export default class Beans {
+
+	private static readonly beanObjectMap:Map<string,BeanObject<any>> = new Map<string, BeanObject<any>>();
 
 	private static logger:Logger;
 
@@ -18,24 +21,23 @@ export default class Beans{
 		Beans.logger = logging.logger();
 	}
 
-	static async LoadBeans(...beans:BeanObject<any>[]){
+	static LoadBeans(...beans:BeanObject<any>[]){
 		for (let bean of beans) {
-			 await Beans.LoadBean(bean);
+			 Beans.LoadBean(bean);
 		}
 	}
 
-	private static async instance<T>(beanObject:BeanObject<T>){
+	private static instance<T>(beanObject:BeanObject<T>){
+		//IOC
 		beanObject.bean = Reflect.construct<any[],T>(beanObject.constructor,beanObject.args);
 		Beans.logger.info(`${beanObject.beanName} Instantiation completed`);
-
 		if(beanObject.initMethod){
-			await beanObject.bean[beanObject.initMethod].apply(beanObject.bean);
+			beanObject.bean[beanObject.initMethod].apply(beanObject.bean);
 			Beans.logger.info(`${beanObject.beanName}.${beanObject.initMethod}(initMethod) run completed`);
 		}else{
 			if((<Initializing>beanObject.bean).afterInitialized){
-				await (<Initializing>beanObject.bean).afterInitialized();
+				(<Initializing>beanObject.bean).afterInitialized();
 				Beans.logger.info(`${beanObject.beanName}.afterInitialized(Initializing) run completed`);
-				return ;
 			}else{
 				if((<SyncInitializing>beanObject.bean).afterInitialized){
 					(<SyncInitializing>beanObject.bean).afterInitialized();
@@ -43,9 +45,42 @@ export default class Beans{
 				}
 			}
 		}
+		//DI
+		if(beanObject.bean[beanObject.constructor.name]){
+			Beans.di<T>(beanObject);
+		}
 	}
 
-	static async LoadBean<T>(beanObject:BeanObject<T>):Promise<T>{
+	private static di<T>(beanObject:BeanObject<T>){
+		let dependOns:string[] = beanObject.bean[beanObject.constructor.name].apply(beanObject.bean);
+		if(dependOns && dependOns.length>=1){
+			for (let i = 0; i < dependOns.length; i++) {
+				let beanName:string = dependOns[i];
+				let bean = Beans.Instance(beanName);
+				if(bean){
+					//todo maybe not precise?
+					if(bean[beanObject.constructor.name]){
+						this.logger.warn(`Bean[${beanName}] is circular,from Class ${beanObject.constructor.name}`);
+					}
+					beanObject.bean[beanName]=bean;
+				}else{
+					process.nextTick((dependBean)=>{
+						if(!dependBean){
+							dependBean = Beans.Instance(beanName);
+						}
+						if(dependBean){
+							beanObject.bean[beanName]=dependBean;
+						}else {
+							this.logger.warn(`Bean[${beanName}] is invalidate,from Class ${beanObject.constructor.name}`);
+						}
+					},Beans.Instance(beanName));
+
+				}
+			}
+		}
+	}
+
+	static LoadBean<T>(beanObject:BeanObject<T>):T{
 		if(!beanObject){
 			throw new Error('beanObject can not be null');
 		}
@@ -68,8 +103,8 @@ export default class Beans{
 			if(!beanObject.args){
 				beanObject.args = [];
 			}
-			if(BeanType.Singleton===beanObject.type && !beanObject.lazyInit){
-				await Beans.instance<T>(beanObject);
+			if(BeanType.Singleton === beanObject.type && !beanObject.lazyInit){
+				Beans.instance<T>(beanObject);
 			}
 		}
 
@@ -77,7 +112,7 @@ export default class Beans{
 		return <T>beanObject.bean;
 	}
 
-	static async Instance<T>(beanName:string):Promise<T>{
+	static Instance<T>(beanName:string):T{
 
 		if(Beans.beanObjectMap.has(beanName)){
 			let beanObject:BeanObject<T> = Beans.beanObjectMap.get(beanName);
@@ -87,12 +122,14 @@ export default class Beans{
 				}else{
 
 					if(beanObject.type === BeanType.Prototype){
-						await Beans.instance(beanObject);
-						return <T>beanObject.bean;
+						Beans.instance(beanObject);
+						let bean:T =  <T>beanObject.bean;
+						beanObject.bean = null;
+						return bean;
 					}
 
 					if(beanObject.lazyInit && beanObject.type === BeanType.Singleton){
-						await Beans.instance(beanObject);
+						Beans.instance(beanObject);
 						return <T>beanObject.bean;
 					}
 				}
@@ -119,7 +156,10 @@ export default class Beans{
 
 		if(beanObject.destroyMethod){
 			beanObject.bean[beanObject.destroyMethod].apply(beanObject.bean);
-			Beans.logger.info(`${beanObject.beanName}.${beanObject.destroyMethod} run completed`);
+			Beans.logger.info(`${beanObject.beanName}.${beanObject.destroyMethod}(destroyMethod) run completed`);
+		}else if((<Disposable>beanObject.bean).destroy){
+			(<Disposable>beanObject.bean).destroy();
+			Beans.logger.info(`${beanObject.beanName}.destroy(Disposable) run completed`);
 		}
 		beanObject.beanName = undefined;
 		beanObject.type = undefined;
@@ -130,6 +170,10 @@ export default class Beans{
 		beanObject.destroyMethod = undefined;
 		beanObject.bean = undefined;
 		Beans.beanObjectMap.delete(beanName);
+	}
+
+	public static getBeans(){
+		return Beans.beanObjectMap;
 	}
 
 }

@@ -20,6 +20,8 @@ import Snowflake from "./open/badman/core/uuid/sf/Snowflake";
 import SnowflakeProperties from "./open/badman/core/uuid/sf/SnowflakeProperties";
 import Beans from "./open/badman/core/bean/Beans";
 import BeanObject from "./open/badman/core/bean/BeanObject";
+import Base from "./open/badman/core/Base";
+import EmptyPropertiesError from "./open/badman/core/error/EmptyPropertiesError";
 
 
 
@@ -42,7 +44,9 @@ export {
     EventListenerContext,
     EventObject,
     Snowflake,
-    SnowflakeProperties
+    SnowflakeProperties,
+    Base,
+    EmptyPropertiesError
 };
 
 
