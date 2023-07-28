@@ -47,6 +47,11 @@ export default class WebsocketPuppetClient implements SyncInitializing{
 			await this.afterInitialized();
 		});
 
+		// this.client.on('connect_error',async (err: Error)=>{
+		// 	let prefix = `${this.clientId}·连接失败 state = ${this.client.connected}\r\n`;
+		// 	this.logger.error(prefix,err);
+		// });
+
 		// this.client.on("disconnect", (reason: Socket.DisconnectReason, description?: DisconnectDescription) => {
 		// 	this.logger.error(`${this.clientId}·断开连接成功 state = ${this.client.connected}, reason = ${description}\r\n`);
 		// });

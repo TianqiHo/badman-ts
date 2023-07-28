@@ -17,6 +17,10 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<M
 		this.logger = logger;
 	}
 
+	strategyName (): string {
+		return 'DefaultNewsSendingStrategy';
+	}
+
 	async preSending (connection:Socket,news: MT): Promise<void> {
 		//throw new EmptyPropertiesError('322322323');
 		//connection.emit('');

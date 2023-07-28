@@ -8,6 +8,7 @@ export default interface NewsSendingStrategy<News>{
 
 
 	//preSending(news:TalkAbout):Promise<News>;
+	strategyName():string;
 
 	preSending(connection:Socket,news:News):Promise<void>;
 

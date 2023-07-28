@@ -45,7 +45,7 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 
 	private readonly logger:Logger
 	private readonly server:Server;
-	private readonly defaultWelcomeMessage:string = '·欢迎光临红浪漫,宾上客一位·';
+	private readonly defaultWelcomeMessage:string = '·Welcome to Badman·';
 	private properties:Partial<ChatServerProperties>;
 
 	private newsSendingStrategy:NewsSendingStrategy<News>;
@@ -91,27 +91,32 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 			}
 
 			let customClientId:string = clientParam.name.toString();
+			this.logger.info(`The server receive connection‘s of the client[${clientParam.name}]`);
 			if(!connection.rooms.has(customClientId)){
 				connection.join(customClientId);
+				this.logger.debug(`The server modify the client[${clientParam.name}] ’s roomId,but not delete the client‘s sid `);
 				//提示连接服务端并登录成功
 				connection.emit('connect_login',
 					{  success:true,
 						msg:`${this.properties.welcomeMessage?this.properties.welcomeMessage:this.defaultWelcomeMessage}(${customClientId})`,
 						id:connection.id}
 				);
+				this.logger.debug(`The server emit[connect_login] to the client[${clientParam.name}] has connected completely`);
 
 				// 监听客户端talk事件并匹配接受者（个人、群体）
 				connection.on('talkTo', async (talkAbout:News) => {
+					this.logger.debug(`The server listened talkTo event from the client[${clientParam.name}]`);
 					let strategy:NewsSendingStrategy<News> = <NewsSendingStrategy<News>>(this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy);
 					await strategy.preSending(connection,talkAbout);
 					await strategy.postSending(connection,talkAbout);
 					await strategy.afterSending(connection,talkAbout);
+					this.logger.debug(`The server use strategy[${strategy.strategyName()}] to handle the client[${clientParam.name}] to exec [pre post after] method completely`);
 				});
 
 				//加入群聊
 				connection.on('joinRoom',(...roomIds)=>{
 					this.joinRoom(connection,roomIds);
-					this.logger.info(`${connection.data.clientName } 加入群聊 [${roomIds.join(',')}]`,'\r\n');
+					this.logger.debug(`${connection.data.clientName } has joined all room [${roomIds.join(',')}]`);
 				});
 
 				//退出群聊
@@ -120,12 +125,13 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 						roomIds = Array.from(connection.rooms);
 						//自动退出当前room
 						connection.disconnect(closeUnderlyingConnection);
+						this.logger.debug(`${connection.data.clientName } has chose to leave room by close underlying connection`);
 					}else{
 						if(roomIds){
 							await this.leaveJoinRoom(connection,roomIds);
 						}
 					}
-					this.logger.info(`${connection.data.clientName } 退出群聊 [${roomIds.join(',')}]`,'\r\n');
+					this.logger.debug(`${connection.data.clientName } has leaved all rooms [${roomIds.join(',')}]`,'\r\n');
 				});
 
 				//通知发送者，谁已经读了消息
@@ -134,9 +140,11 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 					for (let i = 0; i < messageStatuses.length; i++) {
 						let readStatus:ReadStatus = messageStatuses[i];
 						connection.to(readStatus.sender).emit('read',messageStatuses);
+						this.logger.debug(`The server has emitted READ event that news is [${readStatus.newsId}] of room[${readStatus.roomId}] to the client[${readStatus.sender}] by the client [${connection.data.clientName}]`);
 					}
 					let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
 					strategy.afterRead(messageStatuses);
+					this.logger.debug(`The server use strategy[${strategy.strategyName()}] to handle the client[${clientParam.name}] afterRead() completely`);
 
 				});
 
@@ -201,6 +209,7 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 		if(roomIds && roomIds.length>0){
 			for (let i = 0; i < roomIds.length; i++) {
 				await connection.join(roomIds[i]);
+				this.logger.debug(`${connection.data.clientName } has joined the room [${roomIds[i]}]`);
 			}
 		}
 	}
@@ -209,6 +218,7 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 		if(roomIds && roomIds.length>0){
 			for (let i = 0; i < roomIds.length; i++) {
 				await connection.leave(roomIds[i]);
+				this.logger.debug(`${connection.data.clientName } has leaved the room [${roomIds[i]}]`);
 			}
 		}
 	}

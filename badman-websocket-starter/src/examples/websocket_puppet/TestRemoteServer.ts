@@ -1,29 +1,13 @@
 
 
 import {Beans, Logging} from "badman-core";
-import Http from "http";
-import {Http2SecureServer} from "http2";
-import {Server as HTTPSServer} from "https";
 import {Configuration, Logger} from "log4js";
-import {Socket} from "socket.io/dist/socket";
 import WebsocketPuppetClient from "../../open/badman/websocket_puppet/client/WebsocketPuppetClient";
 import WebsocketPuppetClientProperties
 	from "../../open/badman/websocket_puppet/properties/WebsocketPuppetClientProperties";
-import WebsocketPuppetServerProperties
-	from "../../open/badman/websocket_puppet/properties/WebsocketPuppetServerProperties";
-import WebsocketPuppetServer from "../../open/badman/websocket_puppet/server/WebsocketPuppetServer";
 
 
-class MyServer extends WebsocketPuppetServer{
-	constructor (properties:Partial<WebsocketPuppetServerProperties>,logger:Logger, heart?:Http.Server | HTTPSServer | Http2SecureServer) {
-		super(properties, logger, heart);
-	}
-	doWithConn (connection: Socket): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-}
-
-export default class TestServer {
+export default class TestRemoteServer {
 
 	async main(){
 
@@ -48,83 +32,63 @@ export default class TestServer {
 			args:[defaultConfiguration]
 		});
 
-		let logger:Logger = logging.logger(TestServer.name);
+		let logger:Logger = logging.logger(TestRemoteServer.name);
 
-		let namespace = 'websocket-puppet';
-		let properties:Partial<WebsocketPuppetServerProperties> = {
-			namespace: namespace,
-			port: 8888,
-			path:"/emer",
-			allowUpgrades:false,
-			transports:['polling'],
-			cleanupEmptyChildNamespaces:false
-		}
-
-		// let server:MyServer = await Beans.LoadBean<MyServer>({
-		// 	constructor:MyServer,
-		// 	args:[
-		// 		properties,
-		// 		logger
-		// 	]
-		// });
+		// let namespace = '/websocket';
 
 		let serverClientProperties:Partial<WebsocketPuppetClientProperties>={
-			clientId: 'ServerClient',
+			clientId: '病人',
 			addTrailingSlash: true,
-			path: "/emer",
+			path: "/EmerWebsocket",
+			//path: "/emer",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
 			protocols: ['http', 'https'],
-			query: {clientId: 'ServerClient',serverClient:true}
+			query: {clientId: '病人',join:'医院'}
 		}
 
 		let serverClient:WebsocketPuppetClient = await Beans.LoadBean<WebsocketPuppetClient>({
 			constructor: WebsocketPuppetClient,
 			beanName:'ServerClient',
 			args:[
-				`http://127.0.0.1:8888${namespace}`,
+				'http://127.0.0.1:6999',
 				logger,
 				serverClientProperties
 			]
 		});
 
-		// setTimeout(()=>{
-		// 	this.serverClient = new WebsocketPuppetClient(`${this.localhost}:${this.properties.port}${this.namespace}`,this.logger,this.serverClientProperties);
-		// 	this.serverClient.afterInitialized();
-		//this.logger.info('WebsocketPuppetServer and ServerClient created successfully....');
-		// },100);
-
 
 		let customClientProperties:Partial<WebsocketPuppetClientProperties>={
-			clientId: 'CustomClient',
+			clientId: '医院',
 			addTrailingSlash: true,
-			path: "/emer",
+			path: "/EmerWebsocket",
+			//path: "/emer",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
 			protocols: ['http', 'https'],
-			query: {clientId: 'CustomClient'}
+			query: {clientId: '医院',join:'病人'}
 		}
 		let CustomClient:WebsocketPuppetClient = await Beans.LoadBean<WebsocketPuppetClient>({
 			constructor: WebsocketPuppetClient,
 			beanName:'CustomClient',
 			args:[
-				`http://127.0.0.1:8888${namespace}`,
+				'http://127.0.0.1:6999',
 				logger,
 				customClientProperties
 			]
 		});
 
-		setTimeout(()=>{
-			serverClient.send('CustomClient', 'cao你ma');
-		},5000);
+		// setTimeout(()=>{
+		// 	serverClient.send('CustomClient', 'cao你ma');
+		// },5000);
 
 	}
 }
 
 (()=>{
-	new TestServer().main();
+	new TestRemoteServer().main();
 })();
 
 
