@@ -5,7 +5,6 @@ import * as console from "console";
 import {Logger} from "log4js";
 import AmqpConnectionFactory from "../open/badman/rabbit/clients/amqp/AmqpConnectionFactory";
 import RabbitAdminTemplate from "../open/badman/rabbit/RabbitAdminTemplate";
-import RabbitConnectionFactory from "../open/badman/rabbit/RabbitConnectionFactory";
 import RabbitConsumer from "../open/badman/rabbit/RabbitConsumer";
 import RabbitProperties from "../open/badman/rabbit/RabbitProperties";
 import RabbitTemplate from "../open/badman/rabbit/RabbitTemplate";
@@ -22,6 +21,8 @@ class ProduceAndConsume{
 
 	private rabbitAdminTemplate:RabbitAdminTemplate;
 
+	private rabbitConnectionFactory:AmqpConnectionFactory;
+
 	/**
 	 * 初始化
 	 */
@@ -30,13 +31,13 @@ class ProduceAndConsume{
 		let rabbitProperties:RabbitProperties = {
 			"rabbit":{
 				"protocol":"amqp",
-				"hostname":"localhost",
+				"hostname":"local",
 				"port":5672,
 				"username":"devuser",
 				"password":"pwd4dev",
 				"locale":"en_US",
 				"frameMax":0,
-				"heartbeat":1,
+				"heartbeat":100,
 				"vhost":"dev"
 			},
 			"socket":{
@@ -53,15 +54,16 @@ class ProduceAndConsume{
 		let logger:Logger = logging.logger(ProduceAndConsume.name);
 
 		//rabbit连接构造工厂
-		let rabbitConnectionFactory:RabbitConnectionFactory = new AmqpConnectionFactory(rabbitProperties,logger);
+		this.rabbitConnectionFactory = new AmqpConnectionFactory(rabbitProperties,logger);
+		await this.rabbitConnectionFactory.afterInitialized();
 
 		//rabbit 管理端工具入口类，用于定义队列、交换机、绑定交换机与队列、绑定消费者
-		this.rabbitAdminTemplate = new RabbitAdminTemplate(logger,rabbitConnectionFactory);
+		this.rabbitAdminTemplate = new RabbitAdminTemplate(logger,this.rabbitConnectionFactory);
 		//初始化
 		await this.rabbitAdminTemplate.afterInitialized();
 
 		//rabbit 发送端工具入口类，用于发送消息
-		this.rabbitTemplate = new RabbitTemplate(logger,rabbitConnectionFactory);
+		this.rabbitTemplate = new RabbitTemplate(logger,this.rabbitConnectionFactory);
 		//初始化
 		await this.rabbitTemplate.afterInitialized();
 	}
@@ -107,16 +109,23 @@ class ProduceAndConsume{
 		await this.declaration();
 
 		//模拟生产消息
-		setInterval(()=>{
+		setTimeout(()=>{
 			//直发到队列，此时只有dict才能收到消息
 			//this.rabbitTemplate.sendObjectToQueue('dict',{dictId:111,dictName:'字典'});
 
 			//发到交换机，此时只有tenant收到消息
-			//this.rabbitTemplate.sendObjectToExchange('my_exchange','user',{id:123,name:'这个人'});
+			this.rabbitTemplate.sendObjectToExchange('my_exchange','user',{id:123,name:'这个人'});
 
 			//发到交换机，此时tenant dict都能收到消息
 			//this.rabbitTemplate.sendObjectToExchange('my_exchange','dict',{dictId:222,dictName:'字典2'});
-		},5000);
+		},2000);
+
+		setTimeout(async ()=>{
+			// await this.rabbitAdminTemplate.destroy();
+			// await this.rabbitTemplate.destroy();
+			await this.rabbitConnectionFactory.close();
+		},12000);
+
 	}
 }
 

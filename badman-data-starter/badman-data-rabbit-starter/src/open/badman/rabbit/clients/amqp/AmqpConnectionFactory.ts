@@ -1,7 +1,7 @@
 
 
 import {connect, Connection} from "amqplib";
-import {Initializing} from "badman-core";
+import {SyncInitializing} from "badman-core";
 import {Domain} from "domain";
 import {Logger} from "log4js";
 import RabbitConnection from "../../RabbitConnection";
@@ -12,7 +12,7 @@ import AmqpConnection from "./AmqpConnection";
 
 
 
-export default class AmqpConnectionFactory implements RabbitConnectionFactory,Initializing{
+export default class AmqpConnectionFactory implements RabbitConnectionFactory,SyncInitializing{
 
 
 	private readonly logger:Logger;
@@ -91,11 +91,13 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,In
 	}
 
 	async recovery(){
-		await this.afterInitialized();
+		await this.connecting();
 	}
 
 	async close(){
 		await this.connection.close();
+		this.connection = null;
+		this.logger.info('The Amqp connection has been closed');
 	}
 
 	closeGracefully() {

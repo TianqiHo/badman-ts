@@ -1,7 +1,7 @@
 
 
 
-import {Disposable, Initializing} from "badman-core";
+import {Disposable, SyncInitializing} from "badman-core";
 import {Logger} from "log4js";
 import RabbitAccessor from "./RabbitAccessor";
 import RabbitAdminCommands from "./RabbitAdminCommands";
@@ -10,7 +10,7 @@ import RabbitConnectionFactory from "./RabbitConnectionFactory";
 import RabbitConsumer from "./RabbitConsumer";
 
 
-export default class RabbitAdminTemplate extends RabbitAccessor implements RabbitAdminCommands, Initializing, Disposable {
+export default class RabbitAdminTemplate extends RabbitAccessor implements RabbitAdminCommands, SyncInitializing, Disposable {
 
 
 	private readonly logger: Logger;
@@ -20,10 +20,12 @@ export default class RabbitAdminTemplate extends RabbitAccessor implements Rabbi
 		this.logger = logger;
 	}
 
-	async afterInitialized () {
+	afterInitialized () {
+
 	}
 
 	async destroy () {
+		await this.rabbitConnectionFactory.close();
 	}
 
 
