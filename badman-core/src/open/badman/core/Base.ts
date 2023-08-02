@@ -4,7 +4,7 @@ export default class Base {
 
 
 	public static sleep(seconds:number=0,cb?:any){
-		new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			setTimeout(()=>{
 				resolve(true);
 			},seconds);

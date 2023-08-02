@@ -5,7 +5,6 @@ import * as process from "process";
 import Disposable from "../Disposable";
 import Initializing from "../Initializing";
 import Logging from "../logging/Logging";
-import SyncInitializing from "../SyncInitializing";
 import BeanObject, {BeanType} from "./BeanObject";
 
 
@@ -31,19 +30,13 @@ export default class Beans {
 		//IOC
 		beanObject.bean = Reflect.construct<any[],T>(beanObject.constructor,beanObject.args);
 		Beans.logger.info(`${beanObject.beanName} Instantiation completed`);
+
 		if(beanObject.initMethod){
 			beanObject.bean[beanObject.initMethod].apply(beanObject.bean);
 			Beans.logger.info(`${beanObject.beanName}.${beanObject.initMethod}(initMethod) run completed`);
-		}else{
-			if((<Initializing>beanObject.bean).afterInitialized){
-				(<Initializing>beanObject.bean).afterInitialized();
-				Beans.logger.info(`${beanObject.beanName}.afterInitialized(Initializing) run completed`);
-			}else{
-				if((<SyncInitializing>beanObject.bean).afterInitialized){
-					(<SyncInitializing>beanObject.bean).afterInitialized();
-					Beans.logger.info(`${beanObject.beanName}.afterInitialized(SyncInitializing)  run completed`);
-				}
-			}
+		}else if((<Initializing>beanObject.bean).afterInitialized){
+			(<Initializing>beanObject.bean).afterInitialized();
+			Beans.logger.info(`${beanObject.beanName}.afterInitialized(Initializing) run completed,but maybe asynchronous`);
 		}
 		//DI
 		if(beanObject.bean[beanObject.constructor.name]){

@@ -1,8 +1,11 @@
 import * as console from "console";
+import Base from "../open/badman/core/Base";
 import {BeanType} from "../open/badman/core/bean/BeanObject";
 import Beans from "../open/badman/core/bean/Beans";
+import Initializing from "../open/badman/core/Initializing";
+import SyncInitializing from "../open/badman/core/SyncInitializing";
 
-class A {
+class A implements SyncInitializing{
 
 	b:B;
 	c:C;
@@ -15,6 +18,17 @@ class A {
 
 	 async a(){
 		await console.error('aaaaaaaaaaaaaaaaaaaaaaa');
+	}
+
+	async afterInitialized () {
+
+		//Base.sleep(2000,()=>{console.info('---------------sleep----------------')});
+		console.info('---------------1----------------')
+		// new Promise<boolean>(async (resolve, reject)=>{
+		// 	console.info('---------------2----------------')
+		// });
+		// console.info('---------------3----------------')
+
 	}
 
 	init(){
@@ -52,11 +66,16 @@ class C {
 
 export default class BeanExample {
 
-	main(){
+	async main(){
 
-		let b:B = Beans.LoadBean<B>({constructor:B,beanName:'b',lazyInit:true,type:BeanType.Prototype});
-		let a:A = Beans.LoadBean<A>({constructor:A,initMethod: 'init'});
-		let c:C = Beans.LoadBean<C>({constructor:C,beanName:'c',lazyInit:true});
+		while (true){
+			await Base.sleep(500,()=>{console.info('waiting')});
+		}
+
+
+		//let b:B = Beans.LoadBean<B>({constructor:B,beanName:'b',lazyInit:true,type:BeanType.Prototype});
+		//let a:A = Beans.LoadBean<A>({constructor:A});
+		//let c:C = Beans.LoadBean<C>({constructor:C,beanName:'c',lazyInit:true});
 
 		// setInterval(()=>{
 		// 	console.info(a.b === a.c.b);
