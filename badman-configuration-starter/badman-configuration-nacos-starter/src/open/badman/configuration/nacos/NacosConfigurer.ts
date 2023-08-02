@@ -2,12 +2,12 @@
 
 import {Logger} from "log4js";
 import { NacosConfigClient } from "nacos-config";
-import {Initializing} from 'badman-core'
+import {Disposable} from 'badman-core'
 import LocalConfigurer from "../local/LocalConfigurer";
 import NacosProperties from "./NacosProperties";
 import ValidSubscribeMethodError from "./ValidSubscribeMethodError";
 
-export default class NacosConfigurer implements Initializing{
+export default class NacosConfigurer implements Disposable{
 
     private logger:Logger;
 
@@ -34,7 +34,7 @@ export default class NacosConfigurer implements Initializing{
 
     private skipFirstSubscribe:boolean = false;
 
-    private subscribeDelaySeconds:number;
+    private readonly subscribeDelaySeconds:number;
 
 
     constructor(options:NacosProperties,logger:Logger) {
@@ -66,29 +66,9 @@ export default class NacosConfigurer implements Initializing{
         }
 
         this.nacos = new NacosConfigClient(options);
-    }
 
-    get<T>(key:string):T|undefined {
-        let ketElements:string[] = key.split('.');
-        let everyLayer:any;
-        for (let i = 0; i < ketElements.length; i++) {
-            if(everyLayer){
-                everyLayer = everyLayer[ketElements[i]];
-            }else{
-                everyLayer = this.properties[ketElements[i]];
-            }
-            if(!everyLayer){
-                this.logger.warn(`${key} is non-existent`);
-                return everyLayer;
-            }
-        }
-        return <T>everyLayer;
-    }
-
-    async afterInitialized() {
-        //this.properties = await this.nacos.batchGetConfig(this.dataIds,this.groupId);
-        await this.set();
         if(this.subscribed) {
+            this.logger.debug(' Starting run nacos.subscribe() method');
             if (this.customSubscribeCallback) {
                 let c = this.customSubscribeCallback();
                 if (c.refresh) {
@@ -105,29 +85,75 @@ export default class NacosConfigurer implements Initializing{
                 this.subscribe();
             }
         }
+
+        this.nacos.on('error',err => {
+            this.logger.error('NacosConfigurer error -> ',err);
+        });
+
     }
 
-    private async set(){
-        let temporary:object;
+    get<T>(key:string): T|undefined {
+
+        if(!this.properties){
+            this.logger.warn('Have you calling flash() method manually when the NacosConfigured being instantiated?');
+            return null;
+        }
+
+        let keyElements:string[] = key.split('.');
+        let everyLayer:any;
+        for (let i = 0; i < keyElements.length; i++) {
+            let key = keyElements[i];
+            if(this.properties[key] || everyLayer[key]){
+                if(everyLayer){
+                    everyLayer = everyLayer[key];
+                }else{
+                    everyLayer = this.properties[key];
+                }
+            }else{
+                this.logger.warn(` Key[${key}] is non-existent, Have you calling flash() method manually when the NacosConfigured being instantiated?`);
+            }
+        }
+        return <T>everyLayer;
+    }
+
+
+    // afterInitialized (): Promise<void> {
+    //     return this.flash();
+    // }
+
+    /**
+     * The method afterInitialized () has been deleted,will be replaced with flash()
+     * Suggest calling manually when the NacosConfigured being instantiated
+     */
+    public async flash(){
+        //
+        // let all = await this.nacos.batchGetConfig(this.dataIds,this.groupId);
+        // let temporary: object;
+        // for (let key in all) {
+        //     temporary[key] = all[key];
+        // }
+        // this.properties = temporary;
+
+        let temporary: object = Object.create(null);
         for (const dataId of this.dataIds) {
             let custom = JSON.parse(await this.nacos.getConfig(dataId, this.groupId));
-            if(!temporary){
+            if (!temporary) {
                 temporary = custom;
-            }else{
-                for(let key in custom){
+            } else {
+                for (let key in custom) {
                     temporary[key] = custom[key];
                 }
             }
         }
         this.properties = temporary;
-        this.logger.info(`当前配置=》=》=》\n ${JSON.stringify(this.properties)}`)
+        this.logger.info('Configuration -> ',this.properties);
     }
 
     private refreshContent(content){
         for(let key in content){
             this.properties[key] = content[key];
         }
-        this.logger.info(`刷新当前配置=》=》=》\n ${JSON.stringify(this.properties)}`);
+        this.logger.info('refresh ->',this.properties);
     }
 
     public subscribe(callback?:Function){
@@ -138,7 +164,7 @@ export default class NacosConfigurer implements Initializing{
                 dataId: dataId,
                 group: this.groupId
             }, content => {
-                this.logger.debug(`Nacos Configuration Notified -> \n ${content}`);
+                this.logger.debug('Nacos Configuration Notified ->', content);
                 if(this.skipFirstSubscribe && content && callback){
                     this.refreshContent(JSON.parse(content));
                     callback(content);
@@ -152,6 +178,11 @@ export default class NacosConfigurer implements Initializing{
             });
 
         }
+    }
+
+    async destroy (): Promise<void> {
+        this.nacos.close();
+        this.logger.info('NacosConfigurer has been closed');
     }
 
 }

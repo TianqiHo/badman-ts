@@ -1,5 +1,5 @@
 
-import {Logging, SingletonObjectFactory2} from "badman-core";
+import {Beans, Logging, SingletonObjectFactory2} from "badman-core";
 import * as console from "console";
 import {Logger} from "log4js";
 import LocalConfigurer from "../open/badman/configuration/local/LocalConfigurer";
@@ -20,17 +20,11 @@ export default class TestLocal {
 	}
 
 	async main(this:TestLocal){
-
-
 		await SingletonObjectFactory2.init(LocalConfigurer);
-
 		let logging:Logging =  await SingletonObjectFactory2.initWithArgs(Logging,['nacos_configuration_log4js_properties.json']);
 		let logger:Logger = logging.logger(TestLocal.name);
 		//logger.info(`${process.cwd()}\r\n`);
-
 		logger.info(process.env['APPLICATION_NAME']);
-
-
 		// let nacosProperties:NacosProperties = {
 		// 	serverAddr: LocalConfigurer.getEnvironmentValue('NACOS_ADDRESS'),
 		// 	namespace: LocalConfigurer.getEnvironmentValue('NACOS_NAMESPACE'),
@@ -38,7 +32,6 @@ export default class TestLocal {
 		// 	password : LocalConfigurer.getEnvironmentValue('NACOS_PASSWORD'),
 		// };
 		let nacosProperties:NacosProperties = this.nacosProperties();
-
 		// nacosProperties.subscribed=true;
 		// nacosProperties.subscribeScript=
 		// 	'const refresh = (newContent) => {\n' +
@@ -46,15 +39,13 @@ export default class TestLocal {
 		// 	'  if(newContent){process.exit(9000);}\n' +
 		// 	'}\n' +
 		// 	'return {refresh};'
-
-		let nacosConfigurer:NacosConfigurer = await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
-		 let a:A = nacosConfigurer.get<A>('baidu.map')
+		let nacosConfigurer:NacosConfigurer =
+			await SingletonObjectFactory2.initWithArgs(NacosConfigurer,[nacosProperties,logger]);
+		 let a:A = nacosConfigurer.get<A>('uuid.snowflake')
 		 logger.info(a);
-
-		nacosConfigurer.subscribe((c)=>{
-			console.info('---------',c);
-		});
-
+		// nacosConfigurer.subscribe((c)=>{
+		// 	console.info('---------',c);
+		// });
 	}
 
 	private nacosProperties():NacosProperties{
@@ -68,6 +59,36 @@ export default class TestLocal {
 			password : LocalConfigurer.getEnvironmentValue('NACOS_PASSWORD'),
 		};
 		return nacosProperties;
+	}
+
+
+	main2(){
+
+		Beans.LoadBean<LocalConfigurer>({
+			constructor:LocalConfigurer
+		});
+
+		let logger:Logger = Beans.LoadBean<Logging>({
+			constructor:Logging,
+			args:[
+				'nacos_configuration_log4js_properties.json'
+			]
+		}).logger();
+
+
+		let properties:NacosProperties = this.nacosProperties();
+		console.info(
+		Beans.LoadBean<NacosConfigurer>({
+			constructor:NacosConfigurer,
+			beanName: 'nacosConfigurer',
+			lazyInit:false,
+			args:[
+				properties,
+				logger
+			]
+		}).get('uuid.snowflake'))
+
+
 	}
 
 }

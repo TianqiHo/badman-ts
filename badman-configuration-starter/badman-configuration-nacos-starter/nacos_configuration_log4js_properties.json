@@ -8,7 +8,7 @@
   "categories": {
     "default": {
       "appenders": ["stdout_appender"],
-      "level": "info",
+      "level": "debug",
       "enableCallStack": true
     }
   }

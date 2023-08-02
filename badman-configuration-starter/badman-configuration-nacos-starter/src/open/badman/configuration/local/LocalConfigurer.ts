@@ -1,10 +1,10 @@
 
-import {Initializing} from "badman-core";
+import {SyncInitializing} from "badman-core";
 import dotenv from 'dotenv';
 import LocalConfigurationProperties from "./LocalConfigurationProperties";
 
 
-export default class LocalConfigurer implements Initializing{
+export default class LocalConfigurer implements SyncInitializing{
 
 
     private readonly properties:LocalConfigurationProperties;
@@ -14,13 +14,12 @@ export default class LocalConfigurer implements Initializing{
     }
 
 
-   async afterInitialized() {
+   afterInitialized() {
         if(this.properties){
             dotenv.config(this.properties);
         }else{
             dotenv.config();
         }
-
     }
 
     public static getEnvironmentValue(key:string):string{
