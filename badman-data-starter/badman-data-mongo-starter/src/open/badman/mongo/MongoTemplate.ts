@@ -1,14 +1,14 @@
 
 
-import {Disposable, Initializing} from "badman-core";
+import {Disposable, SyncInitializing} from "badman-core";
 import {Logger} from "log4js";
 import {
-    AggregateOptions, AggregationCursor,
+    AggregateOptions, AggregationCursor, Document,
     Filter,
-    FindCursor,
+    FindCursor, FindOneAndUpdateOptions,
     FindOptions,
     InsertOneOptions,
-    InsertOneResult,
+    InsertOneResult, ModifyResult,
     OptionalUnlessRequiredId, UpdateFilter, UpdateOptions,
     UpdateResult
 } from "mongodb";
@@ -18,7 +18,7 @@ import MongoConnection from "./MongoConnection";
 import ClientMongoFactory from "./ClientMongoFactory";
 
 
-export default class MongoTemplate extends MongoAccessor implements MongoCommand,Initializing,Disposable{
+export default class MongoTemplate extends MongoAccessor implements MongoCommand,SyncInitializing,Disposable{
 
     private logger:Logger;
 
@@ -27,12 +27,13 @@ export default class MongoTemplate extends MongoAccessor implements MongoCommand
         this.logger=logger;
     }
 
-    async afterInitialized () {
+    afterInitialized () {
 
     }
 
    async destroy () {
-
+        this.logger.info('There are closing all MongoClients');
+        await this.clientMongoFactory.close();
    }
 
    async find<T> (dbName: string, collectionName: string, filter?: Filter<T>, options?: FindOptions): Promise<T[]> {
@@ -51,7 +52,7 @@ export default class MongoTemplate extends MongoAccessor implements MongoCommand
         let insertOneResult:InsertOneResult<T> = await connection.insert(doc,options);
         if(insertOneResult.acknowledged){
             this.logger.info(' dbName = %s, collectionName=%s,  acknowledged = %s',dbName,collectionName,insertOneResult.acknowledged);
-            this.logger.info(' insertData = %s ',JSON.stringify(doc));
+            this.logger.debug(' insertData = %s ',JSON.stringify(doc));
         }
         return insertOneResult.insertedId.toHexString();
     }
@@ -67,4 +68,12 @@ export default class MongoTemplate extends MongoAccessor implements MongoCommand
         let aggregationCursor:AggregationCursor<T> = await connection.aggregate<T>(pipeline,options);
         return aggregationCursor.toArray();
     }
+
+
+    async findOneAndUpdate<T extends Document = Document>(dbName:string,collectionName:string,filter: Filter<T>, update: UpdateFilter<T>, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>{
+        let connection:MongoConnection = await this.createConnection(dbName,collectionName);
+        return await connection.findOneAndUpdate<T>(filter,update,options);
+    }
+
+
 }

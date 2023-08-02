@@ -12,7 +12,7 @@ import {
 } from "mongodb";
 
 
-export default class ClientMongooseConnection implements MongoConnection{
+export default class ClientMongooseConnection{
 
     private mongoose:Mongoose;
 

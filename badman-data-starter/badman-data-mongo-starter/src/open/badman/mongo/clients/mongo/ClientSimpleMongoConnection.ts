@@ -1,7 +1,7 @@
 
 import {
     BulkWriteOptions,
-    Collection, CountOptions,
+    Collection,
     Db, DeleteOptions, DeleteResult, Document,
     Filter, FindCursor, FindOptions,
     InsertManyResult,
@@ -11,8 +11,7 @@ import {
     UpdateFilter,
     UpdateOptions,
     UpdateResult,
-    WithId,
-    AggregateOptions, AggregationCursor
+    AggregateOptions, AggregationCursor, WithoutId, FindOneAndReplaceOptions, ModifyResult, FindOneAndUpdateOptions
 } from "mongodb";
 import MongoConnection from "../../MongoConnection";
 
@@ -29,40 +28,50 @@ export default class ClientSimpleMongoConnection implements MongoConnection {
     }
 
 
-    insert<T extends Document = Document> (doc: OptionalUnlessRequiredId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
+    async insert<T extends Document> (doc: OptionalUnlessRequiredId<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
         return this.collection.insertOne(doc,options);
     }
 
-    insertMany<T extends Document = Document> (docs: OptionalUnlessRequiredId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
+    async insertMany<T extends Document = Document> (docs: OptionalUnlessRequiredId<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>> {
         return this.collection.insertMany(docs,options);
     }
 
-    update<T extends Document = Document> (filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult<T>> {
+    async update<T extends Document = Document> (filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult<T>> {
         return this.collection.updateOne(filter,update,options);
     }
 
-    updateMany<T extends Document = Document>(filter: Filter<T>, update: UpdateFilter<T>, options?: UpdateOptions): Promise<UpdateResult<T>>{
+    async updateMany<T extends Document = Document>(filter: Filter<T>, update: UpdateFilter<T>, options?: UpdateOptions): Promise<UpdateResult<T>>{
         return this.collection.updateMany(filter,update,options);
     }
 
-    delete<T extends Document = Document>(filter?: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>{
+    async delete<T extends Document = Document>(filter?: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>{
         return this.collection.deleteOne(filter,options);
     }
 
-    deleteMany<T extends Document = Document>(filter?: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>{
+    async deleteMany<T extends Document = Document>(filter?: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>{
         return this.collection.deleteMany(filter,options);
     }
 
-    aggregate<T>(pipeline?: T[], options?: AggregateOptions): AggregationCursor<T>{
+    async findOneAndReplace<T extends Document=Document>(filter: Filter<T>, replacement: WithoutId<T>, options?: FindOneAndReplaceOptions): Promise<ModifyResult<T>>{
+        // @ts-ignore
+        return await this.collection.findOneAndReplace(filter,replacement,options);
+    }
+
+    async findOneAndUpdate<T extends Document = Document>(filter: Filter<T>, update: UpdateFilter<T>, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>{
+        // @ts-ignore
+        return await this.collection.findOneAndUpdate(filter,update,options);
+    }
+
+    aggregate<T extends Document>(pipeline?: T[], options?: AggregateOptions): AggregationCursor<T>{
         return this.collection.aggregate(pipeline,options);
     }
 
-    findOne<T>(filter: Filter<T>, options?: FindOptions): Promise<T | null>{
+    async findOne<T extends Document>(filter: Filter<T>, options?: FindOptions): Promise<T>{
         // @ts-ignore
-        return this.collection.findOne(filter,options);
+        return await this.collection.findOne(filter,options);
     }
 
-    find<T>(filter: Filter<T>, options?: FindOptions): FindCursor<T>{
+    find<T extends Document>(filter: Filter<T>, options?: FindOptions): FindCursor<T>{
         // @ts-ignore
         return this.collection.find(filter,options);
     }

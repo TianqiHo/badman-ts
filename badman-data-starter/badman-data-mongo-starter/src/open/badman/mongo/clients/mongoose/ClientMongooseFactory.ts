@@ -49,7 +49,7 @@ export default class ClientMongooseFactory extends AbstractClientMongoFactory im
         return new ClientMongooseConnection(connection,this.mongoose);
     }
 
-    close() {
+    async close() {
 
     }
 

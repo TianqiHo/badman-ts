@@ -1,6 +1,6 @@
 {
   "name": "badman-data-mongo-starter",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "license": "MIT",
   "description": "oop mongo",
   "main": "dist/BadmanMongo.js",
@@ -20,7 +20,8 @@
     "windowsrebuild": "rd/s/q dist && tsc",
     "windowsbuild": "tsc",
     "start": "tsc && node ./dist/BadmanMongo",
-    "windowsclean": "rd/s/q dist"
+    "windowsclean": "rd/s/q dist",
+    "testExample": "tsc && node ./dist/examples/MongoExample"
   },
   "keywords": [
     "oop",
@@ -28,14 +29,14 @@
   ],
   "author": "BadMan",
   "dependencies": {
-    "mongodb": "^5.2.0"
+
   },
   "devDependencies": {
-
+    "mongodb": "^5.2.0",
     "mongoose": "^7.3.0",
     "log4js": "^6.9.1",
     "@types/node": "^18.15.11",
-    "badman-core": "^0.1.7",
+    "badman-core": "latest",
     "@types/mongodb": "^4.0.7",
     "@types/mongoose": "^5.11.97"
   }

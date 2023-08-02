@@ -8,7 +8,7 @@ import MongoConnection from "./MongoConnection";
 export default abstract class MongoAccessor {
 
 
-    private clientMongoFactory:ClientMongoFactory<MongoConnection>;
+    protected clientMongoFactory:ClientMongoFactory<MongoConnection>;
 
     protected constructor(clientMongoFactory:ClientMongoFactory<MongoConnection>) {
 

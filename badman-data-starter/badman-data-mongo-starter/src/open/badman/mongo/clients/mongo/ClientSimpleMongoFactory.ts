@@ -1,7 +1,6 @@
 
 
 import {Initializing} from "badman-core";
-import * as console from "console";
 import {Logger} from "log4js";
 import ClientMongoFactory from "../../ClientMongoFactory";
 import MongoProperties from "../../MongoProperties";
@@ -88,10 +87,11 @@ export default class ClientSimpleMongoFactory extends AbstractClientMongoFactory
     }
 
     close() {
-        for (let dbName in this.mongoClients) {
-            let client: MongoClient = this.mongoClients[dbName];
-            client.close(false);
-        }
+        this.mongoClients.forEach(async (client: MongoClient,dbName:string) => {
+            await client.close(false);
+            this.logger.info(`The MongoClient[${dbName}] has been closed`);
+        });
+
     }
 
 
