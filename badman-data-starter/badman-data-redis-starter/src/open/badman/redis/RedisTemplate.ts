@@ -1,6 +1,6 @@
 
 
-import {Disposable, Initializing} from "badman-core";
+import {Disposable, Initializing, SyncInitializing} from "badman-core";
 import RedisAccesscor from "./RedisAccesscor";
 import RedisCommands from "./RedisCommands";
 import RedisConnection from "./RedisConnection";
@@ -10,7 +10,7 @@ import RedisLock from "./RedisLock";
 
 
 
-export default class RedisTemplate extends RedisAccesscor implements RedisCommands,Initializing,Disposable{
+export default class RedisTemplate extends RedisAccesscor implements RedisCommands,SyncInitializing,Disposable{
 
 	constructor (redisConnectionFactory:RedisConnectionFactory) {
 		super(redisConnectionFactory);
@@ -78,6 +78,7 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 	private async createStandaloneConnection():Promise<RedisConnection>{
 		let redisConnection:RedisConnection = this.redisConnectionFactory.getConnection();
 		if(redisConnection.isClosed()){
+			this.logger.debug('RedisConnection has closed,and will reopen it');
 			await redisConnection.open();
 		}
 		return redisConnection;
@@ -122,13 +123,13 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 	}
 
 
-
-	async afterInitialized () {
+	afterInitialized () {
 
 	}
 
 	async destroy () {
-
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		await redisConnection.quit();
 	}
 
 }

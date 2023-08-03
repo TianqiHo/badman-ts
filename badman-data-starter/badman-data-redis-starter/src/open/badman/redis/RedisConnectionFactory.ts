@@ -9,7 +9,6 @@ import RedisSentinelConnection from "./RedisSentinelConnection";
 
 export default interface RedisConnectionFactory {
 
-
 	getConnection():RedisConnection;
 
 	getLock():RedisLock;
@@ -17,5 +16,7 @@ export default interface RedisConnectionFactory {
 	getClusterConnection():RedisClusterConnection;
 
 	getSentinelConnection():RedisSentinelConnection;
+
+	getLogger();
 
 }

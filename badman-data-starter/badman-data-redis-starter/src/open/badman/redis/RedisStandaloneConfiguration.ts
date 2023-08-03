@@ -12,4 +12,6 @@ export default interface RedisStandaloneConfiguration extends CommonRedisOptions
 	tls?: ConnectionOptions;
 
 	useLock?:boolean;
+
+	lazyConnect?:boolean;
 }

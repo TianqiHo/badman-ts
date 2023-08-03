@@ -25,9 +25,12 @@ export default interface RedisConnection{
 	redisZSetCommands():RedisZSetCommands;
 
 	redisStringCommands():RedisStringCommands;
+
 	isClosed():boolean;
 
 	close(reconnect?: boolean):void;
 
 	open():Promise<boolean>;
+
+	quit():Promise<boolean>;
 }

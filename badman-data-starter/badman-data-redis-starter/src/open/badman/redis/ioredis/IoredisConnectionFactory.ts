@@ -1,6 +1,6 @@
 
 
-import {Logging, SingletonObjectFactory2} from "badman-core";
+import {Logging, SingletonObjectFactory2, SyncInitializing} from "badman-core";
 import {Redis} from "ioredis";
 import {Logger} from "log4js";
 import RedisClusterConnection from "../RedisClusterConnection";
@@ -15,7 +15,7 @@ import IoredisConnection from "./IoredisConnection";
 import IoredisLockFactory from "./IoredisLockFactory";
 
 
-export default class IoredisConnectionFactory implements RedisConnectionFactory{
+export default class IoredisConnectionFactory implements RedisConnectionFactory,SyncInitializing{
 
 	private redisStandaloneConfiguration:RedisStandaloneConfiguration;
 
@@ -25,7 +25,8 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 
 	private readonly logger:Logger;
 
-	private readonly ioredisLockFactory:IoredisLockFactory;
+	private ioredisLockFactory:IoredisLockFactory;
+
 
 	constructor (redisStandaloneConfiguration:RedisStandaloneConfiguration,logger?:Logger,
 	             ioredisClientConfiguration?:IoredisClientConfiguration) {
@@ -49,16 +50,20 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 		this.redisClient.on('end', () => this.logger.info('The client disconnected the connection to the server...'));
 		this.redisClient.on('reconnecting', (err) => this.logger.info('The client is trying to reconnect to the server...'));
 
-		if(redisStandaloneConfiguration.lazyConnect){
-			this.redisClient.connect((err, result)=>{
-				if(err)this.logger.error('Redis Connect Error -> ',err);
+	}
+
+	async afterInitialized () {
+		if(!!this.redisStandaloneConfiguration.lazyConnect){
+			await this.redisClient.connect((err, result)=>{
+				if(err){
+					this.logger.error('Redis Connect Error -> ',err);
+				}
 			});
 		}
 
-		if(redisStandaloneConfiguration.useLock){
+		if(!!this.redisStandaloneConfiguration.useLock){
 			this.ioredisLockFactory = new IoredisLockFactory(this.redisClient);
 		}
-
 	}
 
 	getLock():RedisLock{
@@ -70,7 +75,8 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 	}
 
 	getConnection (): RedisConnection {
-		return new IoredisConnection(this.redisClient);
+		this.logger.debug('create a new IoredisConnection');
+		return new IoredisConnection(this.redisClient,this.logger);
 	}
 
 	getSentinelConnection (): RedisSentinelConnection {
@@ -79,5 +85,9 @@ export default class IoredisConnectionFactory implements RedisConnectionFactory{
 
 	getClusterConnection (): RedisClusterConnection {
 		throw new Error('Not Implement yet');
+	}
+
+	getLogger () {
+		return this.logger;
 	}
 }
