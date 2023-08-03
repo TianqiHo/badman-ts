@@ -10,4 +10,6 @@ export default interface RestCommands{
 
 	get<RequestDataType,ResponseDataType>(url:string,param:RequestDataType):Promise<HttpClientResponse>;
 
+	put<RequestDataType,ResponseDataType>(url:string,param:RequestDataType):Promise<HttpClientResponse>;
+
 }

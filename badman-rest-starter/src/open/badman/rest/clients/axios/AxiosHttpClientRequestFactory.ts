@@ -25,7 +25,7 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 
 		let defaultProperties:AxiosRequestConfig = {
 			timeout: 5000,
-			timeoutErrorMessage : 'custom timeout 5000',
+			timeoutErrorMessage : 'custom timeout ',
 			responseType: 'json',
 			responseEncoding: 'UTF-8',
 			maxBodyLength: 1024*1024,
@@ -50,11 +50,19 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 
 	}
 
-	async createRequest<RequestDataType> (url: string, param: RequestDataType, method: HttpMethod): Promise<HttpClientRequest> {
+	async createRequest<RequestDataType> (url: string, param: RequestDataType, method: HttpMethod, headerMap?:Map<string,string | string[] | number | boolean>): Promise<HttpClientRequest> {
+
+		let headers:AxiosHeaders = new AxiosHeaders();
+		if(headerMap.size>=1){
+			headerMap.forEach((val:string,key:string)=>{
+				headers.set(key,val);
+			});
+		}
 
 		let request:AxiosRequestConfig ={
 			url: url,
-			method: method
+			method: method,
+			headers: headers
 		}
 
 		switch (method) {

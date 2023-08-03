@@ -1,6 +1,6 @@
 {
   "name": "badman-rest-starter",
-  "version": "0.0.9",
+  "version": "0.0.13",
   "description": "OOP Rest",
   "license": "MIT",
   "main": "dist/BadmanRest.js",
@@ -25,6 +25,7 @@
   "keywords": [
     "OOP",
     "Rest",
+    "HttpClient",
     "axios"
   ],
   "dependencies": {
@@ -33,6 +34,6 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "log4js": "^6.9.1",
-    "badman-core": "^0.1.4"
+    "badman-core": "latest"
   }
 }
