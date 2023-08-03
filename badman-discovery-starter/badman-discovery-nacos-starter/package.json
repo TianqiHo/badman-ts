@@ -1,6 +1,6 @@
 {
   "name": "badman-discovery-nacos-starter",
-  "version": "0.0.8",
+  "version": "0.0.14",
   "description": "OOP Discovery Nacos",
   "license": "MIT",
   "main": "dist/BadmanNacosDiscovery.js",
@@ -21,6 +21,7 @@
     "windowsrebuild": "rd/s/q dist && tsc",
     "windowsbuild": "tsc",
     "start": "tsc && node ./dist/BadmanNacosDiscovery",
+    "example": "tsc && node ./dist/examples/NacosSSL",
     "windowsclean": "rd/s/q dist"
   },
   "keywords": [
@@ -35,8 +36,8 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "log4js": "^6.9.1",
-    "badman-core": "^0.1.4",
-    "badman-rest-starter": "^0.0.9",
+    "badman-core": "latest",
+    "badman-rest-starter": "latest",
     "sdk-base": "^4.2.1"
   }
 }

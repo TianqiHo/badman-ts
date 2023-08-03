@@ -5,6 +5,8 @@ import {HttpClientResponse, RestTemplate} from "badman-rest-starter";
 import {Logger} from "log4js";
 import NacosDiscovery from "./NacosDiscovery";
 import NacosInstanceProperties from "./NacosInstanceProperties";
+import NoSuchServer from "./NoSuchServer";
+import RestRequestError from "./RestRequestError";
 import RestRequestParam from "./RestRequestParam";
 
 
@@ -51,21 +53,27 @@ export default class NacosRest implements Initializing{
 				uri += request.uri;
 			}
 			let url = `${address}${uri}`;
-			this.logger.info(`服务地址->${url}`);
+			this.logger.debug(`The whole url ->${url}`);
 			let response:HttpClientResponse;
 			switch (request.method) {
 				case 'POST' || 'post': {
-					response = await this.restTemplate.post<RequestBodyType,ResponseBodyType>(url, request.param);
+					response = await this.restTemplate.post<RequestBodyType,ResponseBodyType>(url, request.param,request.header);
 					break;
 				}
 				case 'GET' || 'get': {
-					response = await this.restTemplate.get<RequestBodyType,ResponseBodyType>(url, request.param);
+					response = await this.restTemplate.get<RequestBodyType,ResponseBodyType>(url, request.param,request.header);
 					break;
 				}
+				case 'PUT' || 'put':{
+					response = await this.restTemplate.put<RequestBodyType,ResponseBodyType>(url, request.param,request.header);
+					break;
+				}
+				default:
+					throw new RestRequestError(`Not Supported MethodType [ ${request.method} ]`);
 			}
 			return response;
 		}else {
-			throw new Error(`Nacos服务列表无效[${request.serviceName}]`);
+			throw new NoSuchServer(`Invalid or Can't find the service of [${request.serviceName}] from Nacos Server`);
 		}
 	}
 

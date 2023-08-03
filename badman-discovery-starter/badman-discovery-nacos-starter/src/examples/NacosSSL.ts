@@ -1,7 +1,10 @@
 import {Logging, SingletonObjectFactory2} from "badman-core";
+import {AxiosHttpClientRequestFactory, HttpClientResponse, HttpMethod, RestTemplate} from "badman-rest-starter";
 import {Configuration} from "log4js";
 import NacosDiscovery from "../open/badman/discovery/nacos/NacosDiscovery";
+import NacosRest from "../open/badman/discovery/nacos/NacosRest";
 import NacosServerProperties from "../open/badman/discovery/nacos/NacosServerProperties";
+import RestRequestParam from "../open/badman/discovery/nacos/RestRequestParam";
 
 
 export default class NacosSSL {
@@ -29,21 +32,41 @@ export default class NacosSSL {
 		let serverProperties:Partial<NacosServerProperties> = {
 			ssl:true,
 			logger: logger,
-			namespace: "d903a6c3-7300-4f06-83a7-c74f87d8fe7e",
-			serverList: ["localhost.com.cn:443"],
-			//endpoint: "nacos.anmed.com.cn",
+			namespace: "8d0c090e-ddcb-420a-8967-532515f2cf5f",
+			serverList: ["localhost:443"],
 			thisServerPort:1000,
 			thisServerName:'Test'
 		}
 
 		let nacosDiscovery:NacosDiscovery = await SingletonObjectFactory2.initWithArgs<NacosDiscovery>(NacosDiscovery,[true,serverProperties]);
-		nacosDiscovery.subscribeInstance("s1");
+		await nacosDiscovery.subscribeInstance("emer-im");
 
-		// let restTemplate:RestTemplate = await SingletonObjectFactory2.initWithArgs<RestTemplate>(RestTemplate,[new AxiosHttpClientRequestFactory({
-		// 	responseType: 'json'
-		// })]);
-		//
-		// let nacosRest:NacosRest = await SingletonObjectFactory2.init<NacosRest>(NacosRest);
+		let restTemplate:RestTemplate = await SingletonObjectFactory2.initWithArgs<RestTemplate>(RestTemplate,[new AxiosHttpClientRequestFactory({
+			responseType: 'json'
+		})]);
+
+		let nacosRest:NacosRest = await SingletonObjectFactory2.init<NacosRest>(NacosRest);
+
+		let header:Map<string,string> = new Map<string, string>();
+		header.set('timeout','10000');
+		header.set('user',JSON.stringify({id:'0941e0fab4f94c69aee15d7dbe14a455',code:'admin@saas',name:'adminstrotor',avatarUri:null,tenant:{code:'00000000',name:'SAAS'}}));
+
+		let request:RestRequestParam<Object> = {
+			serviceName:'emer-im',
+			groupName: 'DEFAULT_GROUP',
+			uri:'/server/allClients',
+			method: HttpMethod.GET,
+			serviceNameForPath:true,
+			header : header
+		};
+
+		let response:HttpClientResponse = await nacosRest.execute<Object,string>(request);
+		console.info(response.body<string>());
+
+		setTimeout(()=>{
+			nacosDiscovery.destroy();
+		},15000);
+
 		//
 		// let request:RestRequestParam<Object> = {
 		// 	serviceName:'application',
@@ -61,7 +84,7 @@ export default class NacosSSL {
 	}
 
 }
-//
-// (async function () {
-// 	await (new NacosSSL()).main();
-// })();
+
+(async function () {
+	await (new NacosSSL()).main();
+})();

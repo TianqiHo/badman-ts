@@ -39,4 +39,6 @@ export default class RestRequestParam<T> {
 	 */
 	param ?:T;
 
+	header?:Map<string,string | string[] | number | boolean>;
+
 }
