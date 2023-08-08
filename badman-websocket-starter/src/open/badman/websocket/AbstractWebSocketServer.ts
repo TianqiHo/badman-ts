@@ -1,6 +1,6 @@
 
 
-import {Initializing} from "badman-core";
+import {Base, Initializing} from "badman-core";
 import {Logger} from "log4js";
 import AbstractWebSocketServerConnection from "./AbstractWebSocketServerConnection";
 import RequestBodyEntity from "./RequestBodyEntity";
@@ -20,14 +20,18 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 
 	protected serverProperties:WebSocketServerProperties;
 
+	protected closed:boolean;
+
 	protected constructor(serverProperties:WebSocketServerProperties,logger:Logger) {
 		if(!logger || !serverProperties){
 			throw new Error('constructor param[webSocketProperties or logger] can not be null');
 		}
 		this.logger = logger;
+		this.closed = true;
 		this.serverProperties = serverProperties;
 		this.connections = new Map<string, SocketClientConnection>();
 		this.webSocketServer = new WebSocketServer(this.serverProperties);
+		this.closed = false;
 		this.logger.info(`建立WebSocket服务器,监听端口:${this.serverProperties.port},root: ${this.serverProperties.path?this.serverProperties.path:this.serverProperties.context}`);
 	}
 
@@ -49,7 +53,6 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 	}
 
 	async afterInitialized () {
-
 		//监听connection连接事件
 		this.webSocketServer.on('connection', async (ws:WebSocket, request:any) => {
 			let requestBody:Request = this.parseWebsocketRequest(request.url);
@@ -138,4 +141,24 @@ export default abstract class AbstractWebSocketServer<Request extends RequestBod
 	}
 
 	protected abstract canDeleteConnection(connection:SocketClientConnection):boolean;
+
+	async close(){
+		this.webSocketServer.close((err:Error)=>{
+			if(err){
+				this.logger.error(err);
+				this.closed = false;
+				return;
+			}else{
+				this.closed = true;
+			}
+		});
+
+		while (!this.closed){
+			await Base.sleep(2000,()=>{
+				this.logger.debug('Waiting Close WebsocketServer.....');
+			});
+		}
+		this.logger.debug('Closing WebsocketServer successfully.....');
+
+	}
 }

@@ -21,7 +21,6 @@ import NewsReceivingStrategy from "./open/badman/chatt/strategy/NewsReceivingStr
 import UdpError from "./open/badman/udp/UdpError";
 import AbstractUdp from "./open/badman/udp/AbstractUdp";
 import UdpProperties from "./open/badman/udp/UdpProperties";
-
 import WebsocketPuppetClient from "./open/badman/websocket_puppet/client/WebsocketPuppetClient";
 import WebsocketPuppetServer from "./open/badman/websocket_puppet/server/WebsocketPuppetServer";
 import WebsocketPuppetClientProperties from "./open/badman/websocket_puppet/properties/WebsocketPuppetClientProperties";
@@ -29,12 +28,10 @@ import WebsocketPuppetServerProperties from "./open/badman/websocket_puppet/prop
 
 
 export {
-
 	WebsocketPuppetClient,
 	WebsocketPuppetServer,
 	WebsocketPuppetClientProperties,
 	WebsocketPuppetServerProperties,
-
 	AbstractWebSocketServerConnection,
 	AbstractWebSocketServer,
 	RequestBodyEntity,

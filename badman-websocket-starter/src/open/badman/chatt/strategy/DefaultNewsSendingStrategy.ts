@@ -71,7 +71,7 @@ export default class DefaultNewsSendingStrategy implements NewsSendingStrategy<M
 			serverSendTime: new Date()
 		}
 
-		connection.to(news.sender).emit('sent',sentStatus);
+		connection.emit('sent',sentStatus);
 	}
 
 	async afterRead (messageStatuses: ReadStatus[]) {

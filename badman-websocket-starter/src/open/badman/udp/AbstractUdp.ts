@@ -1,6 +1,6 @@
 
 
-import {Initializing, NetParser} from "badman-core";
+import {Base, Initializing, NetParser} from "badman-core";
 import * as dgram from "dgram";
 import {Logger} from "log4js";
 import UdpError from "./UdpError";
@@ -165,6 +165,24 @@ export default abstract class AbstractUdp implements Initializing{
 
 	ping(msg?:any){
 		this.emit('ping',msg);
+	}
+
+	isClosed(){
+		return this.isAlive;
+	}
+
+	async close(){
+		this.logger.info('Closing udp server...');
+		this.heart.close(()=>{
+			this.isAlive = false;
+		});
+
+		while (this.isAlive){
+			await Base.sleep(2000,()=>{
+				this.logger.info('Waiting close udp server...')
+			})
+		}
+		this.logger.info('Closing udp server successfully...');
 	}
 
 }

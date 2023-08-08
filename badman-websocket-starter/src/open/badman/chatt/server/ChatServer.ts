@@ -1,5 +1,5 @@
 
-import {Initializing} from "badman-core";
+import {Base, Initializing} from "badman-core";
 import {Logger} from "log4js";
 import {Server} from "socket.io";
 import {RemoteSocket} from "socket.io/dist/broadcast-operator";
@@ -52,11 +52,14 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 
 	private readonly defaultNewsSendingStrategy:DefaultNewsSendingStrategy;
 
+	private closed:boolean = true;
+
 	constructor (properties:Partial<ChatServerProperties>,logger:Logger,heart?:Http.Server | HTTPSServer | Http2SecureServer) {
 		this.logger = logger;
 		this.properties = properties;
 		this.defaultNewsSendingStrategy = new DefaultNewsSendingStrategy(logger);
-		this.server = new Server(heart || properties.port,properties)
+		this.server = new Server(heart || properties.port,properties);
+		this.closed = false;
 		this.server.on("connection_error", (err) => {
 			this.logger.error('Error->',err);
 		});
@@ -223,4 +226,20 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 		}
 	}
 
+	isClosed():boolean{
+		return this.closed;
+	}
+
+	async close(){
+		this.logger.debug('Closing ChatServer.....');
+		this.server.close(()=>{
+			this.closed = true;
+		});
+		while (!this.closed){
+			await Base.sleep(2000,()=>{
+				this.logger.debug('Waiting Close ChatServer.....');
+			});
+		}
+		this.logger.debug('Closing ChatServer successfully.....');
+	}
 }

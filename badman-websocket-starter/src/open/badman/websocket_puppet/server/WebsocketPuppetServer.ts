@@ -1,6 +1,6 @@
 
 
-import {Initializing} from "badman-core";
+import {Base, Initializing} from "badman-core";
 import Http from "http";
 import {Http2SecureServer} from "http2";
 import {Server as HTTPSServer} from "https";
@@ -23,6 +23,8 @@ export default abstract class WebsocketPuppetServer implements Initializing{
 
 	protected readonly namespace:string;
 
+	private closed:boolean = true;
+
 	protected constructor (properties:Partial<WebsocketPuppetServerProperties>,logger:Logger, heart?:Http.Server | HTTPSServer | Http2SecureServer) {
 		this.logger = logger;
 		this.properties = properties;
@@ -37,6 +39,7 @@ export default abstract class WebsocketPuppetServer implements Initializing{
 		}
 
 		this.server = new Server(heart || properties.port,properties);
+		this.closed = false;
 		this.server.on("connection_error", (err) => {
 			this.logger.error(' WebsocketPuppetServer Error ->',err);
 		});
@@ -125,6 +128,24 @@ export default abstract class WebsocketPuppetServer implements Initializing{
 
 		});
 		return receives;
+	}
+
+
+	isClosed():boolean{
+		return this.closed;
+	}
+
+	async close(){
+		this.logger.debug('Closing WebsocketPuppetServer.....');
+		this.server.close(()=>{
+			this.closed = true;
+		});
+		while (!this.closed){
+			await Base.sleep(2000,()=>{
+				this.logger.debug('Waiting Close WebsocketPuppetServer.....');
+			});
+		}
+		this.logger.debug('Closing WebsocketPuppetServer successfully.....');
 	}
 
 }

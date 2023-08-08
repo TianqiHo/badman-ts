@@ -365,6 +365,7 @@ export default abstract class AbstractChatClient<TalkingType extends TalkAbout =
 				this.leaveRooms();
 			}else{
 				this.client.disconnect();
+				this.logger.debug('Client disconnect successfully');
 			}
 		}else{
 			throw new OfflineError('Already Offline');

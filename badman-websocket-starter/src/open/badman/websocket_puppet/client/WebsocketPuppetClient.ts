@@ -4,6 +4,7 @@ import {SyncInitializing} from "badman-core";
 import {Logger} from "log4js";
 import {io, Socket} from "socket.io-client";
 import EmptyPropertiesError from "../../chatt/error/EmptyPropertiesError";
+import OfflineError from "../../chatt/error/OfflineError";
 import WebsocketPuppetClientProperties from "../properties/WebsocketPuppetClientProperties";
 
 
@@ -106,5 +107,14 @@ export default class WebsocketPuppetClient implements SyncInitializing{
 
 	getClient():Socket{
 		return this.client;
+	}
+
+	disconnect(){
+		if(this.isOnline()){
+			this.client.disconnect();
+			this.logger.debug('WebsocketPuppetClient disconnect successfully');
+		}else{
+			throw new OfflineError('Already Offline');
+		}
 	}
 }
