@@ -13,6 +13,6 @@ export default interface RabbitConnectionFactory {
 
 	close();
 
-	closeGracefully();
+	//closeGracefully();
 
 }

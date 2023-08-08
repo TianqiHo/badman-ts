@@ -49,7 +49,7 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,Sy
 		// await this.domain.run(async () => {
 		// 	process.nextTick(async () => {
 				await this.connecting();
-				await this.closeGracefully();
+				//await this.closeGracefully();
 		// 	});
 		// });
 	}
@@ -100,12 +100,12 @@ export default class AmqpConnectionFactory implements RabbitConnectionFactory,Sy
 		this.logger.info('The Amqp connection has been closed');
 	}
 
-	closeGracefully() {
-		process.on('SIGINT',async (sig)=>{
-			if(sig === 'SIGINT' && !this.closed){
-				await this.close();
-				this.logger.info('The Amqp exit gracefully');
-			}
-		});
-	}
+	// closeGracefully() {
+	// 	process.on('SIGINT',async (sig)=>{
+	// 		if(sig === 'SIGINT' && !this.closed){
+	// 			await this.close();
+	// 			this.logger.info('The Amqp exit gracefully');
+	// 		}
+	// 	});
+	// }
 }
