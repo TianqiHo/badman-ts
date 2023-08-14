@@ -1,3 +1,4 @@
+import {MessageType} from "./TalkAbout";
 
 
 export default interface ReadStatus{
@@ -26,5 +27,14 @@ export default interface ReadStatus{
 	 * 阅读时间
 	 */
 	readTime:Date;
+	/**
+	 * message type
+	 */
+	messageType:MessageType;
+
+	/**
+	 * the message is saved?
+	 */
+	isSave:boolean;
 
 }

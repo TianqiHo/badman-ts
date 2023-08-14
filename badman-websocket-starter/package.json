@@ -1,7 +1,7 @@
 {
 
   "name": "badman-websocket-starter",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "oop chat websocket udp ",
   "private": false,
   "author": "BadMan",

@@ -319,34 +319,26 @@ export default abstract class AbstractChatClient<TalkingType extends TalkAbout =
 	 * @param statuses
 	 */
 	readMessages(...messageStatuses:ReadStatus[]):boolean{
-
 		if(messageStatuses && messageStatuses.length<=0){
 			throw new EmptyPropertiesError('messageStatuses length can’t be 0');
 		}
-
 		for (let i = 0; i < messageStatuses.length; i++) {
 			if(!messageStatuses[i].readTime){
 				throw new EmptyPropertiesError(`The ${i+1}th (type ReadStatus) property readTime can’t be empty`);
 			}
-
 			if(!messageStatuses[i].sender){
 				throw new EmptyPropertiesError(`The ${i+1}th (type ReadStatus) property sender can’t be empty`);
 			}
-
 			if(!messageStatuses[i].roomId){
 				throw new EmptyPropertiesError(`The ${i+1}th (type ReadStatus) property roomId can’t be empty`);
 			}
-
 			if(!messageStatuses[i].reader){
 				throw new EmptyPropertiesError(`The ${i+1}th (type ReadStatus) property reader can’t be empty`);
 			}
-
 			if(!messageStatuses[i].newsId){
 				throw new EmptyPropertiesError(`The ${i+1}th (type ReadStatus) property newsId can’t be empty`);
 			}
-
 		}
-
 		if(this.isOnline()){
 			this.client.emit('readMessages',messageStatuses);
 			return true;

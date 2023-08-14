@@ -142,7 +142,7 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 
 					for (let i = 0; i < messageStatuses.length; i++) {
 						let readStatus:ReadStatus = messageStatuses[i];
-						connection.to(readStatus.sender).emit('read',messageStatuses);
+						connection.to(readStatus.sender).emit('read',readStatus);
 						this.logger.debug(`The server has emitted READ event that news is [${readStatus.newsId}] of room[${readStatus.roomId}] to the client[${readStatus.sender}] by the client [${connection.data.clientName}]`);
 					}
 					let strategy:NewsSendingStrategy<any> = this.newsSendingStrategy?this.newsSendingStrategy:this.defaultNewsSendingStrategy;
