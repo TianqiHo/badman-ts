@@ -1,7 +1,8 @@
 
 import {SingletonObjectFactory2} from "badman-core";
-import {Request, Response, Router} from "express";
+import e from "express";
 import {Logger} from "log4js";
+import {RemoteSocket} from "socket.io/dist/broadcast-operator";
 import ChatClientProperties from "../../open/badman/chatt/client/ChatClientProperties";
 import MT from "../../open/badman/chatt/entity/MT";
 import ChatServer from "../../open/badman/chatt/server/ChatServer";
@@ -10,7 +11,7 @@ import MyClient from "./MyClient";
 
 export default class ChatRouter {
 
-	router:Router;
+	router:e.Router;
 
 	logger:Logger;
 
@@ -20,12 +21,12 @@ export default class ChatRouter {
 
 	constructor(logger:Logger) {
 		this.logger = logger;
-		this.router = Router();
+		this.router = e.Router();
 	}
 
-	binds():Router{
+	binds():e.Router{
 
-		this.router.get('/login/:n',(req, res:Response)=>{
+		this.router.get('/login/:n',(req, res:e.Response)=>{
 
 			let clientName:string = req.params.n;
 			let properties:Partial<ChatClientProperties> = {
@@ -51,7 +52,7 @@ export default class ChatRouter {
 		});
 
 
-		this.router.get('/join/:n/:r/',(req, res:Response)=>{
+		this.router.get('/join/:n/:r/',(req, res:e.Response)=>{
 
 			let clientName:string = req.params.n;
 			let roomId:string = req.params.r;
@@ -73,7 +74,7 @@ export default class ChatRouter {
 			res.json({"joined":true,"name":clientName});
 		});
 
-		this.router.get('/leave/:n/:r/',(req, res:Response)=>{
+		this.router.get('/leave/:n/:r/',(req, res:e.Response)=>{
 
 			let clientName:string = req.params.n;
 			let roomId:string = req.params.r;
@@ -94,7 +95,7 @@ export default class ChatRouter {
 			res.json({"joined":true,"name":clientName});
 		});
 
-		this.router.post('/group/:from/talking/:to',(req, res:Response)=>{
+		this.router.post('/group/:from/talking/:to',(req, res:e.Response)=>{
 
 			let from:string = req.params.from;
 
@@ -126,7 +127,7 @@ export default class ChatRouter {
 
 		});
 
-		this.router.post('/private/:from/talking/:to',(req, res:Response)=>{
+		this.router.post('/private/:from/talking/:to',(req, res:e.Response)=>{
 
 			let from:string = req.params.from;
 			let to:string = req.params.to;
@@ -154,7 +155,7 @@ export default class ChatRouter {
 
 
 
-		this.router.post('/rooms',(req:Request, res:Response)=>{
+		this.router.post('/rooms',(req:e.Request, res:e.Response)=>{
 			let data = {};
 			this.rooms.forEach((value, key) => {
 				data[key] = value;
@@ -162,25 +163,35 @@ export default class ChatRouter {
 			res.json({"rooms":data});
 		});
 
-		this.router.get('/roomReceivers/:excluding/:room',async (req:Request, res:Response)=>{
+		this.router.get('/roomReceivers/:excluding/:room',async (req:e.Request, res:e.Response)=>{
 
 			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
 			let receivers:string[] = await s.getReceives(req.params.excluding,req.params.room);
 			res.json({receivers:receivers});
 		});
 
-		this.router.get('/roomReceivers',async (req:Request, res:Response)=>{
+		this.router.get('/roomReceivers',async (req:e.Request, res:e.Response)=>{
 
 			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
 			let receivers:string[] = await s.getReceives(null);
 			res.json({receivers:receivers});
 		});
 
-		this.router.get('/groupByRoom',async (req:Request, res:Response)=>{
+		this.router.get('/groupByRoom',async (req:e.Request, res:e.Response)=>{
 
 			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
 			let group:Map<string,string[]> = await s.getReceivesGroupByRoomId();
 			res.json({all:group});
+		});
+
+		this.router.get('/sockets',async (req:e.Request, res:e.Response)=>{
+
+			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
+			let all:RemoteSocket<any,any>[] = await s.getSockets();
+			all.map((socket:RemoteSocket<any,any>)=>{
+				//socket.
+			});
+			res.json({all:all});
 		});
 
 		return this.router

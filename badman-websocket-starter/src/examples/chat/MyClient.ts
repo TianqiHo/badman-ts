@@ -14,6 +14,7 @@ export default class MyClient extends AbstractChatClient<MT>{
 	constructor (clientName:string,server:string,logger:Logger,customProperties?:Partial<ChatClientProperties>) {
 		super(clientName,server,logger,customProperties);
 	}
+
 	onReceive (message: MT) {
 		//let copy:TalkAbout = Copy(message);
 		//Object.setPrototypeOf(message,MT.prototype);
@@ -34,6 +35,10 @@ export default class MyClient extends AbstractChatClient<MT>{
 	onLogin (msg: {success,msg}) {
 		this.logger.info('login-response-success ->',msg.success);
 		this.logger.info('login-response-msg ->',msg.msg);
-		this.joinRoom('小绿');
+		//this.joinRoom('小绿');
+	}
+
+	loginRepeatedly (clientParam) {
+		this.logger.info('login-repeatedly ->',clientParam);
 	}
 }

@@ -1,6 +1,6 @@
 
 
-export declare type MessageType = 1|2|3|4|5;
+export declare type MessageType = 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20;
 
 export default class TalkAbout {
 
@@ -12,7 +12,7 @@ export default class TalkAbout {
 
 	receiver:string;
 
-	//@ 某些人
+	//@ someones
 	atReceivers:string[];
 
 	roomId:string;
@@ -25,7 +25,7 @@ export default class TalkAbout {
 
 	sendTime:Date;
 
-	// 1 系统急救动作  2 普通文本   3 照片   4 语音  5 @类型
+	// 1 emergency/important  2 text   3 voice   4 image   5 video   6 file  7 @  8-20 for your custom
 	messageType: MessageType
 
 

@@ -140,6 +140,11 @@ export default abstract class AbstractChatClient<TalkingType extends TalkAbout =
 			this.logger.info(`${this.clientName}·连接成功`,'\r\n');
 
 			//接收消息
+			this.client.on('loginRepeatedly',(clientParam) => {
+				this.loginRepeatedly(clientParam);
+			});
+
+			//接收消息
 			this.client.on('receiveFrom',(message:TalkingType) => {
 				this.onReceive(message);
 			});
@@ -156,6 +161,12 @@ export default abstract class AbstractChatClient<TalkingType extends TalkAbout =
 		}
 	}
 
+
+	/**
+	 * client logins repeatedly many times,will be disconnected
+	 * @param clientParam
+	 */
+	abstract loginRepeatedly(clientParam)
 	/**
 	 * receiving a piece of message tip
 	 * @param talking
