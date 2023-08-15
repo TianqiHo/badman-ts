@@ -41,4 +41,10 @@ export default class MyClient extends AbstractChatClient<MT>{
 	loginRepeatedly (clientParam) {
 		this.logger.info('login-repeatedly ->',clientParam);
 	}
+
+	talkTo (talking: Partial<MT>): boolean {
+		this.logger.info(this.isOnline());
+		this.client.emit('talkTo',talking);
+		return true;
+	}
 }

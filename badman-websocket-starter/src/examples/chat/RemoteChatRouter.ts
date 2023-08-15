@@ -9,7 +9,7 @@ import ChatServer from "../../open/badman/chatt/server/ChatServer";
 import MyClient from "./MyClient";
 
 
-export default class ChatRouter {
+export default class RemoteChatRouter {
 
 	router:e.Router;
 
@@ -32,7 +32,7 @@ export default class ChatRouter {
 			let properties:Partial<ChatClientProperties> = {
 				addTrailingSlash: true,
 				//autoUnref: true,
-				path: "/chatServer",
+				path: "/EmIm",
 				reconnectionAttempts: 10,
 				transports: ["polling"],
 				upgrade: false,
@@ -42,9 +42,9 @@ export default class ChatRouter {
 				}
 			}
 
-			let c:MyClient = new MyClient(clientName,'http://localhost:8888',this.logger,properties);
+			let c:MyClient = new MyClient(clientName,'https://test.com.cn',this.logger,properties);
 
-			await Base.sleep(5000,()=>{
+			await Base.sleep(3000,()=>{
 
 			})
 			this.all.set(c.getClientId(),c);
@@ -121,7 +121,6 @@ export default class ChatRouter {
 				content: req.body.content,
 				unReaders: ['123']
 			}
-
 
 			client.talkTo(mt);
 

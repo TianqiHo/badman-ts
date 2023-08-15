@@ -11,6 +11,7 @@ import ChatServerProperties from "../../open/badman/chatt/server/ChatServerPrope
 
 import bodyParser, {OptionsText} from 'body-parser';
 import ChatRouter from "./ChatRouter";
+import RemoteChatRouter from "./RemoteChatRouter";
 
 
 
@@ -55,6 +56,7 @@ export default class ChatDemoServer {
 		express.use(bodyParser.text({limit: '10mb', extended: true} as OptionsText));
 
 		express.use('/',new ChatRouter(logger).binds());
+		express.use('/remote',new RemoteChatRouter(logger).binds());
 
 		let server:Http.Server = express.listen(properties.port,async ()=>{
 			let chatServer:ChatServer = await SingletonObjectFactory2.initWithArgs(ChatServer,[properties,logger,server]);

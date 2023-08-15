@@ -88,25 +88,24 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 			// });
 
 			let clientParam = connection.handshake.query;
-			let clientName:string = clientParam.name.toString()
+			let clientName:string = clientParam.name.toString();
+			this.logger.info(`The server receive connection‘s of the client[${clientName}]`);
+			if(!connection.data.clientName){
+				connection.data.clientName = clientName;
+			}
 			let isExisted:boolean = await this.isExist(clientName);
-
 			if(isExisted){
 				connection.emit('loginRepeatedly',clientName);
+				this.logger.warn('Repeat login,then emit loginRepeatedly event, and compulsory withdrawal after 2s...');
 				await Base.sleep(2000,()=>{
 					connection.disconnect(true);
-					this.logger.warn('Repeat login,then emit loginRepeatedly event, and compulsory withdrawal after 2s...');
+					this.logger.warn('Server has Closed Repeatable login ...');
 				})
 				return;
 			}
 
-			if(!connection.data.clientName){
-				connection.data.clientName = clientName;
-			}
-
-			this.logger.info(`The server receive connection‘s of the client[${clientName}]`);
 			connection.join(clientName);
-			this.logger.debug(`The server modify the client[${clientName}] ’s roomId,but not delete the client‘s sid `);
+			this.logger.debug(`The server modify newly the client[${clientName}] ’s roomId,but not delete the client‘s sid `);
 			//提示连接服务端并登录成功
 			connection.emit('connect_login',
 				{  success:true,
@@ -184,11 +183,14 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> implements I
 	 */
 	async isExist(clientName:string,...roomIds:string[]):Promise<boolean>{
 		let sockets:RemoteSocket<any,any>[] = await this.getSockets(...roomIds);
+		let first:boolean = true;
 		let socket:RemoteSocket<any,any> = sockets.find((socket:RemoteSocket<any,any>) => {
 			if(socket.data.clientName === clientName){
-				return socket;
-			}else{
-				return null;
+				if(first){
+					first = false;
+				}else{
+					return socket;
+				}
 			}
 		});
 		let isExist:boolean = false;

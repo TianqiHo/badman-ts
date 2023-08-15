@@ -26,7 +26,6 @@ import WebsocketPuppetServer from "./open/badman/websocket_puppet/server/Websock
 import WebsocketPuppetClientProperties from "./open/badman/websocket_puppet/properties/WebsocketPuppetClientProperties";
 import WebsocketPuppetServerProperties from "./open/badman/websocket_puppet/properties/WebsocketPuppetServerProperties";
 
-
 export {
 	WebsocketPuppetClient,
 	WebsocketPuppetServer,
