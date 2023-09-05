@@ -34,13 +34,11 @@ export default class TestRemoteServer {
 
 		let logger:Logger = logging.logger(TestRemoteServer.name);
 
-		// let namespace = '/websocket';
-
 		let serverClientProperties:Partial<WebsocketPuppetClientProperties>={
 			clientId: '病人',
 			addTrailingSlash: true,
-			path: "/EmerWebsocket",
-			//path: "/emer",
+			//path: "/ss/websocket",
+			path: "/emer/",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
@@ -52,33 +50,34 @@ export default class TestRemoteServer {
 			constructor: WebsocketPuppetClient,
 			beanName:'ServerClient',
 			args:[
-				'http://127.0.0.1:6999',
+				//'http://127.0.0.1:6999',
+				'https://test.com.cn/ss',
 				logger,
 				serverClientProperties
 			]
 		});
 
 
-		let customClientProperties:Partial<WebsocketPuppetClientProperties>={
-			clientId: '医院',
-			addTrailingSlash: true,
-			path: "/EmerWebsocket",
-			//path: "/emer",
-			reconnectionAttempts: 10,
-			transports: ["polling"],
-			upgrade: false,
-			protocols: ['http', 'https'],
-			query: {clientId: '医院',join:'病人'}
-		}
-		let CustomClient:WebsocketPuppetClient = await Beans.LoadBean<WebsocketPuppetClient>({
-			constructor: WebsocketPuppetClient,
-			beanName:'CustomClient',
-			args:[
-				'http://127.0.0.1:6999',
-				logger,
-				customClientProperties
-			]
-		});
+		// let customClientProperties:Partial<WebsocketPuppetClientProperties>={
+		// 	clientId: '医院',
+		// 	addTrailingSlash: true,
+		// 	path: "/EmerWebsocket",
+		// 	//path: "/emer",
+		// 	reconnectionAttempts: 10,
+		// 	transports: ["polling"],
+		// 	upgrade: false,
+		// 	protocols: ['http', 'https'],
+		// 	query: {clientId: '医院',join:'病人'}
+		// }
+		// let CustomClient:WebsocketPuppetClient = await Beans.LoadBean<WebsocketPuppetClient>({
+		// 	constructor: WebsocketPuppetClient,
+		// 	beanName:'CustomClient',
+		// 	args:[
+		// 		'http://127.0.0.1:6999',
+		// 		logger,
+		// 		customClientProperties
+		// 	]
+		// });
 
 		// setTimeout(()=>{
 		// 	serverClient.send('CustomClient', 'cao你ma');

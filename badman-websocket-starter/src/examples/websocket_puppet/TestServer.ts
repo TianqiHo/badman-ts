@@ -50,28 +50,28 @@ export default class TestServer {
 
 		let logger:Logger = logging.logger(TestServer.name);
 
-		let namespace = 'websocket-puppet';
+		let namespace = '/websocket-puppet';
 		let properties:Partial<WebsocketPuppetServerProperties> = {
 			namespace: namespace,
 			port: 8888,
-			path:"/emer",
+			path:"/emer/",
 			allowUpgrades:false,
 			transports:['polling'],
 			cleanupEmptyChildNamespaces:false
 		}
 
-		// let server:MyServer = await Beans.LoadBean<MyServer>({
-		// 	constructor:MyServer,
-		// 	args:[
-		// 		properties,
-		// 		logger
-		// 	]
-		// });
+		let server:MyServer = await Beans.LoadBean<MyServer>({
+			constructor:MyServer,
+			args:[
+				properties,
+				logger
+			]
+		});
 
 		let serverClientProperties:Partial<WebsocketPuppetClientProperties>={
 			clientId: 'ServerClient',
 			addTrailingSlash: true,
-			path: "/emer",
+			path: "/emer/",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
@@ -89,17 +89,10 @@ export default class TestServer {
 			]
 		});
 
-		// setTimeout(()=>{
-		// 	this.serverClient = new WebsocketPuppetClient(`${this.localhost}:${this.properties.port}${this.namespace}`,this.logger,this.serverClientProperties);
-		// 	this.serverClient.afterInitialized();
-		//this.logger.info('WebsocketPuppetServer and ServerClient created successfully....');
-		// },100);
-
-
 		let customClientProperties:Partial<WebsocketPuppetClientProperties>={
 			clientId: 'CustomClient',
 			addTrailingSlash: true,
-			path: "/emer",
+			path: "/emer/",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
@@ -116,8 +109,12 @@ export default class TestServer {
 			]
 		});
 
-		setTimeout(()=>{
-			serverClient.send('CustomClient', 'cao你ma');
+		setTimeout(async ()=>{
+			//serverClient.send('CustomClient', 'cao你ma');
+			logger.info('-------------------------------------');
+			logger.info(await server.getReceives(null));
+			logger.info('-------------------------------------');
+			logger.info(await server.getReceivesGroupByRoomId());
 		},5000);
 
 	}

@@ -44,8 +44,8 @@ export default class ChatRouter {
 
 			let c:MyClient = new MyClient(clientName,'http://localhost:8888',this.logger,properties);
 
-			await Base.sleep(5000,()=>{
-
+			await Base.sleep(2000,()=>{
+				this.logger.info('-------------------');
 			})
 			this.all.set(c.getClientId(),c);
 			res.json({"login":true,"id":c.getClientId()});
@@ -182,7 +182,11 @@ export default class ChatRouter {
 		this.router.get('/groupByRoom',async (req:e.Request, res:e.Response)=>{
 
 			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
-			let group:Map<string,string[]> = await s.getReceivesGroupByRoomId();
+			let group:Map<string,string[]> = new Map();
+			if(s){
+				group = await s.getReceivesGroupByRoomId();
+			}
+
 			res.json({all:group});
 		});
 
@@ -194,6 +198,13 @@ export default class ChatRouter {
 				//socket.
 			});
 			res.json({all:all});
+		});
+
+		this.router.get('/close',async (req:e.Request, res:e.Response)=>{
+
+			let s:ChatServer = SingletonObjectFactory2.Instance<ChatServer>(ChatServer.name);
+			await s.close();
+			res.json({ok:true});
 		});
 
 		return this.router

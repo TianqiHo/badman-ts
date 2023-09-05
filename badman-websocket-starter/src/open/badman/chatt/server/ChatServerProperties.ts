@@ -11,6 +11,8 @@ export default interface ChatServerProperties{
 
 	welcomeMessage:string;
 
+	namespace:string;
+
 	/**
 	 * 服务端口
 	 */

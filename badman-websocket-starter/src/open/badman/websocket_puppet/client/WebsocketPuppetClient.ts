@@ -3,6 +3,7 @@
 import {SyncInitializing} from "badman-core";
 import {Logger} from "log4js";
 import {io, Socket} from "socket.io-client";
+import {DisconnectDescription} from "socket.io-client/build/esm-debug/socket";
 import EmptyPropertiesError from "../../chatt/error/EmptyPropertiesError";
 import OfflineError from "../../chatt/error/OfflineError";
 import WebsocketPuppetClientProperties from "../properties/WebsocketPuppetClientProperties";
@@ -48,14 +49,14 @@ export default class WebsocketPuppetClient implements SyncInitializing{
 			await this.afterInitialized();
 		});
 
-		// this.client.on('connect_error',async (err: Error)=>{
-		// 	let prefix = `${this.clientId}·连接失败 state = ${this.client.connected}\r\n`;
-		// 	this.logger.error(prefix,err);
-		// });
+		this.client.on('connect_error',async (err: Error)=>{
+			let prefix = `${this.clientId}·连接失败 state = ${this.client.connected}\r\n`;
+			this.logger.error(prefix,err);
+		});
 
-		// this.client.on("disconnect", (reason: Socket.DisconnectReason, description?: DisconnectDescription) => {
-		// 	this.logger.error(`${this.clientId}·断开连接成功 state = ${this.client.connected}, reason = ${description}\r\n`);
-		// });
+		this.client.on("disconnect", (reason: Socket.DisconnectReason, description?: DisconnectDescription) => {
+			this.logger.error(`${this.clientId}·断开连接成功 state = ${this.client.connected}, reason = ${description}\r\n`);
+		});
 	}
 
 	isOnline(){

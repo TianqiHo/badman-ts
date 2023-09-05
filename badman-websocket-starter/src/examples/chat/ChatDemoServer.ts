@@ -1,6 +1,5 @@
 
 
-
 import {Logging, SingletonObjectFactory2} from "badman-core";
 import Http from "http";
 import {Configuration, Logger} from "log4js";
@@ -12,7 +11,6 @@ import ChatServerProperties from "../../open/badman/chatt/server/ChatServerPrope
 import bodyParser, {OptionsText} from 'body-parser';
 import ChatRouter from "./ChatRouter";
 import RemoteChatRouter from "./RemoteChatRouter";
-
 
 
 
@@ -31,7 +29,7 @@ export default class ChatDemoServer {
 			"categories": {
 				"default": {
 					"appenders": ["stdout_appender"],
-					"level": "info",
+					"level": "debug",
 					"enableCallStack": true
 				}
 			}
@@ -39,7 +37,15 @@ export default class ChatDemoServer {
 
 		let logging:Logging = await SingletonObjectFactory2.initWithArgs<Logging>(Logging,[defaultConfiguration]);
 		let logger:Logger = logging.logger(ChatDemoServer.name);
+		let express:Express = createExpress();
+		express.disable("x-powered-by");
+		express.use(bodyParser.json({limit: '2mb'}));
+		express.use(bodyParser.text({limit: '10mb', extended: true} as OptionsText));
+		express.use('/',new ChatRouter(logger).binds());
+		express.use('/remote',new RemoteChatRouter(logger).binds());
+		let server:Http.Server = express.listen(8888,async ()=>{
 
+		});
 
 		let properties:Partial<ChatServerProperties> = {
 			port: 8888,
@@ -48,19 +54,7 @@ export default class ChatDemoServer {
 			transports:['polling'],
 			cleanupEmptyChildNamespaces:false
 		};
-
-		const express:Express = createExpress();
-
-		express.disable("x-powered-by");
-		express.use(bodyParser.json({limit: '2mb'}));
-		express.use(bodyParser.text({limit: '10mb', extended: true} as OptionsText));
-
-		express.use('/',new ChatRouter(logger).binds());
-		express.use('/remote',new RemoteChatRouter(logger).binds());
-
-		let server:Http.Server = express.listen(properties.port,async ()=>{
-			let chatServer:ChatServer = await SingletonObjectFactory2.initWithArgs(ChatServer,[properties,logger,server]);
-		});
+		let chatServer:ChatServer = await SingletonObjectFactory2.initWithArgs(ChatServer,[properties,logger,server]);
 
 	}
 
