@@ -1,11 +1,14 @@
 
 
+import {RequestTransformer, ResponseTransformer} from "./HttpTransformer";
+
+
 export default interface HttpProperties{
 
 
 	timeout?:number;
 
-	headers?:Object;
+	headers?: Map<string,string | string[] | number | boolean>;
 
 	maxBodyLength?:number;
 
@@ -15,4 +18,11 @@ export default interface HttpProperties{
 
 	responseType?:string;
 
+	withCredentials?:boolean;
+
+	maxRedirects?:number;
+
+	transformRequest?: RequestTransformer<unknown> | RequestTransformer<unknown>[];
+
+	transformResponse?: ResponseTransformer<unknown> | ResponseTransformer<unknown>[];
 }

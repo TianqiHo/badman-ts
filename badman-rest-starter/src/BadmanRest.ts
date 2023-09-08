@@ -7,6 +7,9 @@ import HttpClientRequest from "./open/badman/rest/HttpClientRequest";
 import HttpClientRequestFactory from "./open/badman/rest/HttpClientRequestFactory";
 import HttpProperties from "./open/badman/rest/HttpProperties";
 import {HttpMethod} from "./open/badman/rest/HttpMethod";
+import {RequestTransformer,ResponseTransformer}  from "./open/badman/rest/HttpTransformer";
+import HttpHeaders from "./open/badman/rest/HttpHeaders";
+import {ContentType} from "./open/badman/rest/ContentType";
 
 export {
 	AxiosHttpClientRequestFactory,
@@ -15,6 +18,10 @@ export {
 	HttpClientRequest,
 	HttpClientRequestFactory,
 	HttpMethod,
-	HttpProperties
+	HttpProperties,
+	ResponseTransformer,
+	RequestTransformer,
+	HttpHeaders,
+	ContentType
 }
 

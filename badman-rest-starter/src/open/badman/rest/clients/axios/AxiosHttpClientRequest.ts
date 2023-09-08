@@ -26,7 +26,9 @@ export default class AxiosHttpClientRequest implements HttpClientRequest{
 
 	async execute<RequestDataType,ResponseDataType>(): Promise<HttpClientResponse> {
 		try {
-			let response: AxiosResponse<ResponseDataType> = await this.axios.request<ResponseDataType, AxiosResponse<ResponseDataType>, RequestDataType>(this.request);
+			this.logger.debug('Executing a request , and seeing the whole configuration. ',this.request);
+			let response: AxiosResponse<ResponseDataType> = await this.axios.request<ResponseDataType, AxiosResponse<ResponseDataType,RequestDataType>, RequestDataType>(this.request);
+			this.logger.debug('Receiving a response , it is ', response);
 			return new AxiosHttpClientResponse(response);
 		} catch (e) {
 			this.logger.error('异常捕获 ->',e);
@@ -40,7 +42,6 @@ export default class AxiosHttpClientRequest implements HttpClientRequest{
 				}
 				return new AxiosHttpClientResponse(errResponse);
 			}else{
-
 				let errResponse:AxiosResponse = {
 					status : HttpStatusCode.InternalServerError,
 					statusText: `框架异常 - ${e.message}`,

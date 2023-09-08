@@ -1,6 +1,6 @@
 {
   "name": "badman-rest-starter",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "OOP Rest",
   "license": "MIT",
   "main": "dist/BadmanRest.js",
@@ -20,6 +20,7 @@
     "windowsrebuild": "rd/s/q dist && tsc",
     "windowsbuild": "tsc",
     "start": "tsc && node ./dist/BadmanRest",
+    "t": "tsc && node ./dist/examples/Test",
     "windowsclean": "rd/s/q dist"
   },
   "keywords": [
