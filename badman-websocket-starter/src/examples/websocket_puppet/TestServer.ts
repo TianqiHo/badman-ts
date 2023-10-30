@@ -114,7 +114,7 @@ export default class TestServer {
 			logger.info('-------------------------------------');
 			logger.info(await server.getReceives(null));
 			logger.info('-------------------------------------');
-			logger.info(await server.getReceivesGroupByRoomId());
+			//logger.info(await server.getReceivesGroupByRoomId());
 		},5000);
 
 	}

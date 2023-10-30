@@ -1,6 +1,5 @@
 
 
-import {Base} from "badman-core";
 import Http from "http";
 import {Http2SecureServer} from "http2";
 import {Server as HTTPSServer} from "https";
@@ -9,6 +8,8 @@ import {Server} from "socket.io";
 import {Adapter} from "socket.io-adapter";
 import {RemoteSocket} from "socket.io/dist/broadcast-operator";
 import {Namespace} from "socket.io/dist/namespace";
+import {Handshake} from "socket.io/dist/socket";
+
 
 
 export default abstract class AbstractSIOServer {
@@ -82,6 +83,7 @@ export default abstract class AbstractSIOServer {
 
 	async close(){
 		this.logger.debug('Closing SIOServer.....');
+
 		this.server.close(async (err:Error)=>{
 			if(err){
 				this.logger.error('Closing SIOServer err',err);
@@ -96,7 +98,10 @@ export default abstract class AbstractSIOServer {
 				this.logger.debug('Closing SIOServer successfully.....');
 			}
 		});
-		this.namespace.disconnectSockets(true);
+
+		this.server._nsps.forEach((value,key)=>{
+			value.disconnectSockets(true);
+		});
 	}
 
 
@@ -112,7 +117,23 @@ export default abstract class AbstractSIOServer {
 			return [];
 		}
 		let receives:any[] = sockets.map((socket:RemoteSocket<any,any>,index:number)=>{
-			let client:object = {clientName:socket.data.clientName,namespace:this.namespaceStr,id:socket.id};
+
+			let handshake:Handshake = socket.handshake;
+			let client:object = {
+				namespace:this.namespaceStr,
+				id:socket.id,
+				clientName:socket.data.clientName,
+				roomIds:socket.rooms,
+				time: handshake.time,
+				address: handshake.address,
+				xdomain: handshake.xdomain,
+				secure: handshake.secure,
+				url:handshake.url,
+				query:handshake.query,
+				auth:handshake.auth,
+				transportDataInConnection: socket.data
+			};
+
 			if(excluding && excluding !== socket.data.clientName){
 				return client;
 			}else{
@@ -126,11 +147,13 @@ export default abstract class AbstractSIOServer {
 
 		let sockets:RemoteSocket<any,any>[] = await this.getSockets();
 		if(!sockets || sockets.length<=0){
-			return [];
+			return {};
 		}
 		let group:any = {};
 		sockets.forEach((socket:RemoteSocket<any,any>)=>{
+
 			let client:object = {clientName:socket.data.clientName,namespace:this.namespaceStr,id:socket.id};
+
 			socket.rooms.forEach(value => {
 				if(group[value]){
 					group[value].push(client);
