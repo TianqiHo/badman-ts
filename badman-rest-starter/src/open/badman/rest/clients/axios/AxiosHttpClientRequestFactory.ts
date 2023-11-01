@@ -8,12 +8,13 @@ import {
 	InternalAxiosRequestConfig, RawAxiosRequestHeaders
 } from "axios";
 import {InstantiationAwarePostProcessor} from "badman-core";
-import qs from 'querystring'
+import {Logger} from "log4js";
 import {ContentType} from "../../ContentType";
 import HttpClientRequest from "../../HttpClientRequest";
 import HttpClientRequestFactory from "../../HttpClientRequestFactory";
 import {HttpMethod} from "../../HttpMethod";
 import HttpProperties from "../../HttpProperties";
+import LogUtil from "../../LogUtil";
 import AxiosHttpClientRequest from "./AxiosHttpClientRequest";
 
 
@@ -22,8 +23,15 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 
 	private readonly axios:Axios;
 
+	private logger:Logger;
 
-	constructor (properties?:HttpProperties) {
+	constructor (properties?:HttpProperties,logger?:Logger) {
+
+		if(logger){
+			this.logger=logger;
+		}else {
+			this.logger = LogUtil.deduceLogger();
+		}
 
 		let headers:AxiosHeaders = new AxiosHeaders();
 		headers.setContentType(ContentType.APPLICATION_JSON_UTF8);
@@ -33,7 +41,7 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 		headers.setAccept('*/*');
 
 		let defaultProperties:AxiosRequestConfig = {
-			timeout: 5000,
+			timeout: 30000,
 			timeoutErrorMessage : 'request timeout ',
 			responseType: 'json',
 			responseEncoding: 'UTF-8',
@@ -131,7 +139,7 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 				console.info('----------------UNTREATED PARAM-----------------------');
 				break;
 		}
-		return new AxiosHttpClientRequest(this.axios,request);
+		return new AxiosHttpClientRequest(this.axios,request,this.logger);
 	}
 
 	private detectContentType(contentType:unknown,defaultMethodHeaders:RawAxiosRequestHeaders):unknown{
@@ -180,17 +188,13 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 			return typeof param === 'string' ? param : JSON.stringify(param);
 		}
 
-		if(contentType === ContentType.APPLICATION_X_WWW_FORM_URLENCODED
-			// || contentTypeStr === ContentType.MULTIPART_FORM_DATA
-			// || contentTypeStr === ContentType.APPLICATION_OCTET_STREAM
-		){
-			if(param instanceof Map){
-				//let obj:any = Object.assign<any,Map<any,any>>({},param);
-				return qs.stringify(this.map2object(param));
-			}
-			// @ts-ignore
-			return qs.stringify(param);
-		}
+		// if(contentType === ContentType.APPLICATION_X_WWW_FORM_URLENCODED){
+		// 	if(param instanceof Map){
+		// 		return qs.stringify(this.map2object(param));
+		// 	}
+		// 	// @ts-ignore
+		// 	return qs.stringify(param);
+		// }
 
 		return param;
 	}

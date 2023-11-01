@@ -20,9 +20,11 @@ export default class Test {
 		let rest:RestTemplate =  await SingletonObjectFactory2.initWithArgs<RestTemplate>(RestTemplate,[new AxiosHttpClientRequestFactory({
 			//responseType:'arraybuffer'
 			responseType:'json'
-		}),logger]);
+		})]);
 
-		// let response:HttpClientResponse = await rest.post<Object,Object>('http://192.168.1.27:6999/testA',JSON.stringify({ss:'sssss'}));
+		let response:HttpClientResponse = await rest.get<Object,Buffer>('http://192.168.1.36:9999/sdy/test',{t:'ss222'});
+		//logger.info('------',response);
+		logger.info('',response.body<Buffer>().toString());
 
 		//let response:HttpClientResponse = await rest.get<Object,ArrayBuffer>('http://192.168.1.11:6999/emergency_application/testB',{aaa:'sssss'});
 

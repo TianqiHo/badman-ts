@@ -7,6 +7,7 @@ import HttpClientRequestFactory from "./HttpClientRequestFactory";
 import HttpClientResponse from "./HttpClientResponse";
 import {HttpMethod} from "./HttpMethod";
 import HttpProperties from "./HttpProperties";
+import LogUtil from "./LogUtil";
 import RestCommands from "./RestCommands";
 
 
@@ -17,11 +18,15 @@ export default class RestTemplate implements RestCommands,Initializing,Disposabl
 
 	private httpClientRequestFactory:HttpClientRequestFactory;
 
-	constructor (httpClientRequestFactory:HttpClientRequestFactory,logger:Logger) {
-		this.logger = logger;
+	constructor (httpClientRequestFactory:HttpClientRequestFactory,logger?:Logger) {
+
+		if(logger){
+			this.logger = logger;
+		}else{
+			this.logger = LogUtil.deduceLogger();
+		}
 		this.httpClientRequestFactory = httpClientRequestFactory;
 	}
-
 
 	async afterInitialized () {
 		return;

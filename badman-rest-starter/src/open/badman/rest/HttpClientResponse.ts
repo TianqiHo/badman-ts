@@ -11,5 +11,7 @@ export default interface HttpClientResponse{
 
 	success():boolean;
 
+	is2xxSuccessful():boolean;
+
 	message():string;
 }
