@@ -75,6 +75,29 @@ export default class ChatRouter {
 			res.json({"joined":true,"name":clientName});
 		});
 
+
+		this.router.get('/joins/:n/:rs/',(req, res:e.Response)=>{
+
+			let clientName:string = req.params.n;
+			let roomIds:string[] = req.params.rs.split(',');
+
+			if(!clientName){
+				res.json({"msg":"用户名【n】不能为空"});
+				res.end();
+			}
+
+			let c:MyClient = this.all.get(clientName);
+			c.joinRooms(...roomIds);
+
+			// if(this.rooms.has(roomId)){
+			// 	this.rooms.get(roomId).push(clientName);
+			// }else{
+			// 	this.rooms.set(roomId,[clientName]);
+			// }
+
+			res.json({"joined":true,"name":clientName});
+		});
+
 		this.router.get('/leave/:n/:r/',(req, res:e.Response)=>{
 
 			let clientName:string = req.params.n;

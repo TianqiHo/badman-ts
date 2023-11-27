@@ -38,7 +38,7 @@ export default class TestRemoteServer {
 			clientId: '病人',
 			addTrailingSlash: true,
 			//path: "/ss/websocket",
-			path: "/emer/",
+			path: "/emer-websocket-server/",
 			reconnectionAttempts: 10,
 			transports: ["polling"],
 			upgrade: false,
@@ -50,8 +50,8 @@ export default class TestRemoteServer {
 			constructor: WebsocketPuppetClient,
 			beanName:'ServerClient',
 			args:[
-				//'http://127.0.0.1:6999',
-				'https://test.com.cn/ss',
+				'http://127.0.0.1:7999',
+				//'https://test.com.cn/ss',
 				logger,
 				serverClientProperties
 			]

@@ -126,8 +126,8 @@ export default class ChatServer<News extends TalkAbout = TalkAbout> extends Abst
 
 			//加入群聊
 			connection.on('joinRoom',(...roomIds)=>{
-				this.joinRoom(connection,roomIds);
-				this.logger.debug(`${connection.data.clientName } has joined all room [${roomIds.join(',')}]`);
+				this.joinRoom(connection,...roomIds);
+				this.logger.trace(`${connection.data.clientName } has joined all room [${roomIds.join(',')}]`);
 			});
 
 			//退出群聊

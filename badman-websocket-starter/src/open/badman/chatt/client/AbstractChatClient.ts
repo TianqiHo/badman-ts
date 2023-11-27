@@ -257,7 +257,7 @@ export default abstract class AbstractChatClient<TalkingType extends TalkAbout =
 				for (let i = 0; i < roomIds.length; i++) {
 					this.roomIds.set(roomIds[i],roomIds[i]);
 				}
-				this.client.emit('joinRoom',roomIds.flat(1));
+				this.client.emit('joinRoom',...roomIds);
 			}else{
 				throw new EmptyPropertiesError('roomIds can‘t be null');
 			}

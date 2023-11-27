@@ -70,7 +70,8 @@ export default abstract class AbstractSIOServer {
 	async getSockets(...roomIds:string[]):Promise<RemoteSocket<any,any>[]>{
 		let sockets: RemoteSocket<any,any>[] = [];
 		if(roomIds && roomIds.length>0){
-			sockets = await this.getNsp().in(roomIds).fetchSockets();
+			const nr:string[] = roomIds.filter(each=>each).map<string>(each=>each);
+			sockets = await this.getNsp().in(nr).fetchSockets();
 		}else {
 			sockets = await this.getNsp().fetchSockets();
 		}
