@@ -1,6 +1,6 @@
 {
   "name": "badman-rest-starter",
-  "version": "0.0.16",
+  "version": "0.0.19",
   "description": "OOP Rest",
   "license": "MIT",
   "main": "dist/BadmanRest.js",

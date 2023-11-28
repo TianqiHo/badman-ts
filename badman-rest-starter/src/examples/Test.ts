@@ -1,6 +1,7 @@
 
 
 import {Logging, SingletonObjectFactory2} from "badman-core";
+import * as console from "console";
 import {Logger} from "log4js";
 import AxiosHttpClientRequestFactory from "../open/badman/rest/clients/axios/AxiosHttpClientRequestFactory";
 import HttpClientResponse from "../open/badman/rest/HttpClientResponse";
@@ -22,9 +23,17 @@ export default class Test {
 			responseType:'json'
 		})]);
 
-		let response:HttpClientResponse = await rest.get<Object,Buffer>('http://192.168.1.36:9999/sdy/test',{t:'ss222'});
+		let header:Map<string,string> = new Map<string, string>();
+		header.set('timeout','30000');
+		header.set('Content-Type','application/json');
+
+		//let response:HttpClientResponse = await rest.get<Object,Buffer>('http://192.168.1.36:9999/sdy/test',{t:'ss222'});
+		let response:HttpClientResponse = await rest.post<object,object>('http://localhost:7999/emer-websocket/ws/multi/message',{
+			someones: ['10101010'],
+			data: "AdmissionApplication@{\"patientId\":\"d380e66e3e6045ee94b7ea2c2fa2ab20\",\"caseId\":\"fbd0359b0de84457917b962dbd6bdd1e\",\"name\":\"创建20\",\"age\":\"23\",\"gender\":\"F\",\"disease\":\"P\",\"status\":0,\"pushDate\":\"2023-11-27 13:52:06\"}@AdmissionApplication"
+		},header);
 		//logger.info('------',response);
-		logger.info('',response.body<Buffer>().toString());
+		logger.info('',response.body<object>().toString());
 
 		//let response:HttpClientResponse = await rest.get<Object,ArrayBuffer>('http://192.168.1.11:6999/emergency_application/testB',{aaa:'sssss'});
 

@@ -95,7 +95,7 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 		}
 
 		let headers:AxiosHeaders = new AxiosHeaders();
-		headers.set('BadMan','forever');
+
 		if(custom){
 			let customHeadersMap = custom.headers;
 			if(customHeadersMap && customHeadersMap.size >= 1){
@@ -107,6 +107,7 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 		}
 		let defaultHeaders:HeadersDefaults = this.axios.defaults.headers;
 		request = Object.assign(request,defaultHeaders,custom,headers);
+		request.headers =Object.assign({},defaultHeaders,headers);
 
 		let customContentType = headers.getContentType()?headers.getContentType():null;
 		switch (method) {
@@ -179,13 +180,32 @@ export default class AxiosHttpClientRequestFactory implements HttpClientRequestF
 		}
 
 		if(contentType === ContentType.APPLICATION_JSON
-			|| contentType === ContentType.APPLICATION_JSON_UTF8){
+			|| contentType === ContentType.APPLICATION_JSON_UTF8) {
 
-			if(param instanceof Map){
+			if (param instanceof Map) {
 				return JSON.stringify(this.map2object(param));
 				//throw new Error('Param Map type can‘t be serialize to a json string.');
 			}
-			return typeof param === 'string' ? param : JSON.stringify(param);
+
+			if(typeof param === 'string'){
+				return param;
+			}
+
+			let type:string =  typeof param;
+			if(type === "object"){
+				let isJsonString:boolean = true;
+				try {
+					return JSON.stringify(param);
+				} catch (e) {
+					isJsonString = false;
+				}
+				if(!isJsonString){
+					return param;
+				}
+			}else{
+				this.logger.warn("Param type = ",type);
+			}
+			return param;
 		}
 
 		// if(contentType === ContentType.APPLICATION_X_WWW_FORM_URLENCODED){
