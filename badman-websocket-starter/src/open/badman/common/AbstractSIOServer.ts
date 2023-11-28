@@ -71,7 +71,12 @@ export default abstract class AbstractSIOServer {
 		let sockets: RemoteSocket<any,any>[] = [];
 		if(roomIds && roomIds.length>0){
 			const nr:string[] = roomIds.filter(each=>each).map<string>(each=>each);
-			sockets = await this.getNsp().in(nr).fetchSockets();
+			this.logger.debug("Getting the rooms [%s]‘s clients",nr);
+			if(nr.length>=1){
+				sockets = await this.getNsp().in(nr).fetchSockets();
+			}else{
+				sockets = await this.getNsp().fetchSockets();
+			}
 		}else {
 			sockets = await this.getNsp().fetchSockets();
 		}

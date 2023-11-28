@@ -50,7 +50,7 @@ export default class TestRemoteServer {
 			constructor: WebsocketPuppetClient,
 			beanName:'ServerClient',
 			args:[
-				'http://127.0.0.1:7999',
+				//'http://127.0.0.1:7999',
 				//'https://test.com.cn/ss',
 				logger,
 				serverClientProperties
