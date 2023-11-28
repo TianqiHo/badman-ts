@@ -5,7 +5,9 @@ import {RedisKeyType, RedisValueType, StringOrNullType} from "./RedisDeclares";
 
 export default interface RedisHashCommands {
 
-	hashSet(key: RedisKeyType, entry: Map<RedisValueType, RedisValueType>): Promise<number>;
+	hashSet(key: RedisKeyType, entry: Map<RedisValueType, RedisValueType> | object): Promise<number>;
+
+	hashSetNx(key: RedisKeyType,  field: string | Buffer, value: string | Buffer | number): Promise<number>;
 
 	hashGet(key: RedisKeyType, field: RedisKeyType): Promise<StringOrNullType>;
 

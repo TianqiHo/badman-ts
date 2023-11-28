@@ -21,6 +21,12 @@ export default class IoredisStringCommands implements RedisStringCommands{
 		return value;
 	}
 
+
+	async getBufferVal (key: RedisKeyType): Promise<Buffer | null> {
+		let value:Buffer | null = await this.connection.redisClientInstance().getBuffer(key);
+		return value;
+	}
+
 	async setVal (key: RedisKeyType, value: RedisValueType): Promise<boolean> {
 		try {
 			await this.connection.redisClientInstance().set(key, value);

@@ -13,4 +13,5 @@ export default interface RedisStringCommands {
 
 	getVal(key:RedisKeyType):Promise<StringOrNullType>;
 
+	getBufferVal(key:RedisKeyType):Promise<Buffer | null>;
 }

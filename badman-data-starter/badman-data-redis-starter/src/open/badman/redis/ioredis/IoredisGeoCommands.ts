@@ -19,8 +19,7 @@ export default class IoredisGeoCommands implements RedisGeoCommands{
 	}
 
 	async geoAdd (key: RedisKeyType,...longitudeLatitudeMembers: RedisValueType[] ): Promise<number> {
-		// @ts-ignore
-		return this.connection.redisClientInstance().geoadd(key,longitudeLatitudeMembers.flat<RedisValueType,number>(1));
+		return this.connection.redisClientInstance().geoadd(key,...longitudeLatitudeMembers);
 	}
 
 	geoDist (key: RedisKeyType, begin: RedisValueType, end: RedisValueType, m: "m"): Promise<StringOrNullType> {
@@ -30,9 +29,7 @@ export default class IoredisGeoCommands implements RedisGeoCommands{
 
 
 	geoList (key: RedisKeyType, ...members: RedisValueType[]): Promise<([longitude: string, latitude: string] | null)[]> {
-
-		// @ts-ignore
-		return this.connection.redisClientInstance().geopos(key,members.flat(1));
+		return this.connection.redisClientInstance().geopos(key,...members);
 	}
 
 }

@@ -1,6 +1,6 @@
 
 
-import {Disposable, Initializing, SyncInitializing} from "badman-core";
+import {Disposable, SyncInitializing} from "badman-core";
 import RedisAccesscor from "./RedisAccesscor";
 import RedisCommands from "./RedisCommands";
 import RedisConnection from "./RedisConnection";
@@ -24,8 +24,7 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	async hashDel (key: RedisKeyType, ...fields:RedisKeyType[]): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-		// @ts-ignore
-		return await redisConnection.redisHashCommands().hashDel(key, fields.flat(1));
+		return await redisConnection.redisHashCommands().hashDel(key, ...fields);
 	}
 
 	async hashGetAll (key: RedisKeyType): Promise<Record<string, string>> {
@@ -38,9 +37,14 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 		return await redisConnection.redisHashCommands().hashGet(key, field);
 	}
 
-	async hashSet (key: RedisKeyType, entry: Map<RedisValueType, RedisValueType>): Promise<number> {
+	async hashSet (key: RedisKeyType, entry: Map<RedisValueType, RedisValueType> | object): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-		return await redisConnection.redisHashCommands().hashSet(key, entry)
+		return await redisConnection.redisHashCommands().hashSet(key, entry);
+	}
+
+	async hashSetNx (key: RedisKeyType, field: string | Buffer, value: string | Buffer | number): Promise<number> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisHashCommands().hashSetNx(key, field,value);
 	}
 
 	async hashLen (key: RedisKeyType): Promise<number> {
@@ -60,8 +64,7 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	async geoAdd ( key: RedisKeyType,...longitudeLatitudeMembers: RedisValueType[] ): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-		// @ts-ignore
-		return await redisConnection.redisGeoCommands().geoAdd(key,longitudeLatitudeMembers.flat<RedisValueType,number>(1));
+		return await redisConnection.redisGeoCommands().geoAdd(key,...longitudeLatitudeMembers);
 	}
 
 	async geoDist (key: RedisKeyType, begin: RedisValueType, end: RedisValueType, m: "m"): Promise<StringOrNullType> {
@@ -71,8 +74,7 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	async geoList (key: RedisKeyType, ...members: RedisValueType[]): Promise<([longitude: string, latitude: string] | null)[]> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-		// @ts-ignore
-		return await redisConnection.redisGeoCommands().geoList(key,members.flat(1));
+		return await redisConnection.redisGeoCommands().geoList(key,...members);
 	}
 
 	private async createStandaloneConnection():Promise<RedisConnection>{
@@ -87,6 +89,11 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 	async getVal (key: RedisKeyType): Promise<StringOrNullType> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
 		return await redisConnection.redisStringCommands().getVal(key);
+	}
+
+	async getBufferVal (key: RedisKeyType): Promise<Buffer | null> {
+		let redisConnection:RedisConnection = await this.createStandaloneConnection();
+		return await redisConnection.redisStringCommands().getBufferVal(key);
 	}
 
 	async setEx (key: RedisKeyType, value: RedisValueType, timeoutOfSeconds: number): Promise<boolean> {
@@ -111,8 +118,7 @@ export default class RedisTemplate extends RedisAccesscor implements RedisComman
 
 	async zSetRem (key: RedisKeyType, ...members): Promise<number> {
 		let redisConnection:RedisConnection = await this.createStandaloneConnection();
-		// @ts-ignore
-		return await redisConnection.redisZSetCommands().zSetRem(key,members.flat(1));
+		return await redisConnection.redisZSetCommands().zSetRem(key,...members);
 	}
 
 
