@@ -4,8 +4,13 @@ import {Logger} from "log4js";
 import { NacosConfigClient } from "nacos-config";
 import {Disposable} from 'badman-core'
 import LocalConfigurer from "../local/LocalConfigurer";
+import LogUtil from "../LogUtil";
 import NacosProperties from "./NacosProperties";
 import ValidSubscribeMethodError from "./ValidSubscribeMethodError";
+
+
+
+
 
 export default class NacosConfigurer implements Disposable{
 
@@ -18,6 +23,8 @@ export default class NacosConfigurer implements Disposable{
     private readonly dataIds:string[] = [this.defaultDataId];
 
     private readonly groupId:string;
+
+    private readonly namespace:string;
 
     private properties:object;
 
@@ -37,8 +44,13 @@ export default class NacosConfigurer implements Disposable{
     private readonly subscribeDelaySeconds:number;
 
 
-    constructor(options:NacosProperties,logger:Logger) {
-        this.logger = logger;
+    constructor(options:NacosProperties,logger?:Logger) {
+        if(logger){
+            this.logger = logger;
+        }else{
+            this.logger = LogUtil.deduceLogger();
+        }
+
         let customDataId:string = LocalConfigurer.getEnvironmentValue('NACOS_DATA_IDS');
         if(customDataId){
             this.logger.info(`Customer NacosDataId is ${customDataId}`);
@@ -65,6 +77,7 @@ export default class NacosConfigurer implements Disposable{
             this.subscribeDelaySeconds = options.skipFirstSubscribeDelaySeconds?options.skipFirstSubscribeDelaySeconds:5000;
         }
 
+        this.namespace = LocalConfigurer.getEnvironmentValue('NACOS_NAMESPACE');
         this.nacos = new NacosConfigClient(options);
 
         if(this.subscribed) {
@@ -103,7 +116,7 @@ export default class NacosConfigurer implements Disposable{
         let everyLayer:any;
         for (let i = 0; i < keyElements.length; i++) {
             let key = keyElements[i];
-            if(this.properties[key] || everyLayer[key]){
+            if( (this.properties && this.properties[key]) || everyLayer[key]){
                 if(everyLayer){
                     everyLayer = everyLayer[key];
                 }else{
@@ -133,15 +146,18 @@ export default class NacosConfigurer implements Disposable{
         //     temporary[key] = all[key];
         // }
         // this.properties = temporary;
-
         let temporary: object = Object.create(null);
         for (const dataId of this.dataIds) {
             let custom = JSON.parse(await this.nacos.getConfig(dataId, this.groupId));
             if (!temporary) {
                 temporary = custom;
             } else {
-                for (let key in custom) {
-                    temporary[key] = custom[key];
+                if(custom){
+                    for (let key in custom) {
+                        temporary[key] = custom[key];
+                    }
+                }else {
+                    this.logger.warn('未加载到dataId = %s,groupId = %s,namespace = %s ',dataId,this.groupId,this.namespace);
                 }
             }
         }
