@@ -22,5 +22,9 @@ export default interface RedisHashCommands {
 	hashDel(key: RedisKeyType,...fields:RedisKeyType[]):Promise<number>;
 
 	hashExists(key: RedisKeyType, field: RedisKeyType):Promise<boolean>;
+	
+	hashSetWithExpiry(key: RedisKeyType, entry: Map<RedisValueType, RedisValueType> | object, ttl: number): Promise<number>;
+	
+        hashSetWithExpiryMs(key: RedisKeyType, entry: Map<RedisValueType, RedisValueType> | object, ttl: number): Promise<number>;
 
 }
